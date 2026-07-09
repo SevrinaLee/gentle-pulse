@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  --color-indigo-deep: #2e2360;
+  --color-indigo-deep-light: #4b3d8f;
+  --color-rose-gold: #b76e79;
+  --color-rose-gold-light: #e8c4c4;
+  --color-off-white: #faf7f2;
+}
+
+body {
+  background-color: var(--color-off-white);
+  color: var(--color-indigo-deep);
+}
