@@ -30,15 +30,41 @@ export function InsightCard({
       </p>
 
       {suggestion ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="mt-3 px-4 py-2 rounded-xl bg-rose-gold text-white text-sm font-medium hover:bg-rose-gold/90 transition"
-        >
-          Show Me How
-        </button>
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-off-white">
+            {suggestion.headline}
+          </p>
+          <div className="flex gap-2 flex-wrap text-xs">
+            {suggestion.time_saved_minutes != null && (
+              <span className="px-2 py-1 rounded-full bg-rose-gold/30 text-off-white">
+                Saves ~{Math.round(suggestion.time_saved_minutes / 60)}h/wk
+              </span>
+            )}
+            {suggestion.difficulty_stars != null && (
+              <span className="px-2 py-1 rounded-full bg-off-white/10 text-off-white/80">
+                Difficulty {"★".repeat(suggestion.difficulty_stars)}
+                {"☆".repeat(5 - suggestion.difficulty_stars)}
+              </span>
+            )}
+            {suggestion.energy_saved_stars != null && (
+              <span className="px-2 py-1 rounded-full bg-off-white/10 text-off-white/80">
+                Energy saved {"★".repeat(suggestion.energy_saved_stars)}
+                {"☆".repeat(5 - suggestion.energy_saved_stars)}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="px-4 py-2 rounded-xl bg-rose-gold text-white text-sm font-medium hover:bg-rose-gold/90 transition"
+          >
+            Show Me How
+          </button>
+        </div>
       ) : (
-        <p className="text-sm text-off-white/60">Preparing a suggestion…</p>
+        <p className="text-sm text-off-white/60">
+          No suggestion for this one yet — check back after your next check-in.
+        </p>
       )}
 
       {open && suggestion && (
