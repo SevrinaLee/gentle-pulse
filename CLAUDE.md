@@ -38,6 +38,42 @@ build the wrong thing (e.g. a marketing landing page). Open the plan and build f
    is a LATER "Lock it down" sprint, before real users/data. (Keeps the app demoable + screenshot-able.)
 7. Never put secrets in frontend code.
 
+## DevSecOps (binding — security verification gates)
+Always implement security development related to coding, authentication and data. Before
+declaring any coding task complete, write and **execute** automated tests that verify the four
+gates below, then report detailed results — only after ALL verification tests have run.
+
+1. **Data Isolation** — assert User A gets a 403/404 when requesting User B's data.
+2. **SQL Injection Prevention** — inject raw payloads (e.g. `' OR '1'='1`) into every endpoint
+   and assert they fail safely (stored as inert text or rejected; never executed).
+3. **Brute-Force Defenses** — simulate rapid repeated requests and assert rate-limiting triggers.
+4. **Data Exfiltration Prevention** — verify no bulk data dumps and no unintended fields
+   (secrets, other users' rows, internal columns) leak from any endpoint or client bundle.
+
+**How these gates map to THIS project** (v1 is deliberately demo-first — see rule 6 above and
+`docs/SECURITY.md` — so the gates phase in rather than contradict the plan):
+
+- **Applies NOW (every sprint):**
+  - Gate 2 (SQL injection): all DB access goes through Supabase PostgREST (parameterized —
+    never introduce raw SQL string concatenation). Tests must still prove hostile payloads
+    through `/api/check-ins`, `/api/sigh-events/*`, `/api/suggestions/*` are stored/rejected
+    safely.
+  - Gate 4 (partial): API responses must return only intended fields; `SUPABASE_SERVICE_ROLE_KEY`
+    and `OPENAI_API_KEY` stay server-side only; nothing beyond the anon key ships in the client
+    bundle. (Bulk reads of demo seed data via the anon key are *intentional* in v1.)
+  - Gate 3 (partial): public write endpoints currently have NO rate limiting — known gap; add
+    abuse throttling on writes when touching those routes.
+- **Blocking gates for Sprint 4 "Lock it down"** (auth + owner-scoped RLS). Sprint 4 is NOT done
+  until these tests pass:
+  - Gate 1: user A's rows return 403/404/empty to user B and to anonymous callers (except
+    `demo_user_id` seed rows, which stay publicly readable per `docs/TASKS.md`).
+  - Gate 3: rapid login/magic-link attempts trigger rate limiting.
+  - Gate 4 (full): bulk cross-user reads via the anon key fail once owner-scoped RLS replaces
+    the permissive v1 policies.
+
+Never weaken a passing security test to make a feature ship. If a gate can't be met, stop and
+report it instead of completing silently.
+
 ## Deploy & data (binding — this stack is already provisioned)
 - **Deploy by git, never by CLI.** `git add -A && git commit -m "…" && git push` to `main`;
   Vercel auto-deploys from GitHub. Do NOT run `vercel deploy` / `vercel --prod` with local
