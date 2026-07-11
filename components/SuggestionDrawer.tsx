@@ -7,10 +7,12 @@ type Tab = "prompt" | "template" | "n8n";
 
 export function SuggestionDrawer({
   suggestion,
+  canWrite = true,
   onClose,
   onIgnored,
 }: {
   suggestion: Suggestion;
+  canWrite?: boolean;
   onClose: () => void;
   onIgnored: () => void;
 }) {
@@ -146,14 +148,16 @@ export function SuggestionDrawer({
             ))}
         </div>
 
-        <button
-          type="button"
-          onClick={handleIgnore}
-          disabled={ignoring}
-          className="w-full text-sm text-indigo-deep/50 hover:text-red-500 py-2"
-        >
-          {ignoring ? "Ignoring…" : "Ignore this suggestion"}
-        </button>
+        {canWrite && (
+          <button
+            type="button"
+            onClick={handleIgnore}
+            disabled={ignoring}
+            className="w-full text-sm text-indigo-deep/50 hover:text-red-500 py-2"
+          >
+            {ignoring ? "Ignoring…" : "Ignore this suggestion"}
+          </button>
+        )}
       </div>
     </div>
   );

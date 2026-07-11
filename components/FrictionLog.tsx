@@ -15,7 +15,13 @@ function timeAgo(iso: string) {
   return `${Math.round(hours / 24)}d ago`;
 }
 
-export function FrictionLog({ checkIns }: { checkIns: CheckInWithTag[] }) {
+export function FrictionLog({
+  checkIns,
+  canWrite = true,
+}: {
+  checkIns: CheckInWithTag[];
+  canWrite?: boolean;
+}) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -54,15 +60,17 @@ export function FrictionLog({ checkIns }: { checkIns: CheckInWithTag[] }) {
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => handleDelete(checkIn.id)}
-            disabled={deletingId === checkIn.id}
-            aria-label="Delete check-in"
-            className="text-indigo-deep/30 hover:text-red-500 text-sm shrink-0 disabled:opacity-40"
-          >
-            {deletingId === checkIn.id ? "…" : "✕"}
-          </button>
+          {canWrite && (
+            <button
+              type="button"
+              onClick={() => handleDelete(checkIn.id)}
+              disabled={deletingId === checkIn.id}
+              aria-label="Delete check-in"
+              className="text-indigo-deep/30 hover:text-red-500 text-sm shrink-0 disabled:opacity-40"
+            >
+              {deletingId === checkIn.id ? "…" : "✕"}
+            </button>
+          )}
         </li>
       ))}
     </ul>

@@ -81,6 +81,7 @@ const TEMPLATES: Record<string, SuggestionTemplate> = {
 export async function maybeGenerateSuggestions(
   supabase: SupabaseClient,
   patterns: Pattern[],
+  userId: string,
 ) {
   for (const pattern of patterns) {
     if (pattern.occurrence_count < 3) continue;
@@ -89,6 +90,7 @@ export async function maybeGenerateSuggestions(
       .from("suggestions")
       .select("id")
       .eq("pattern_id", pattern.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (existing) continue;
@@ -97,6 +99,7 @@ export async function maybeGenerateSuggestions(
       action: "pattern.detected",
       target_table: "patterns",
       target_id: pattern.id,
+      user_id: userId,
       payload: {
         category: pattern.category,
         occurrence_count: pattern.occurrence_count,
@@ -111,6 +114,7 @@ export async function maybeGenerateSuggestions(
     const { data: suggestion } = await supabase
       .from("suggestions")
       .insert({
+        user_id: userId,
         pattern_id: pattern.id,
         headline: template.headline,
         body: template.body.replace(
@@ -136,6 +140,7 @@ export async function maybeGenerateSuggestions(
         action: "suggestion.generated",
         target_table: "suggestions",
         target_id: suggestion.id,
+        user_id: userId,
         payload: { pattern_id: pattern.id, headline: suggestion.headline },
       });
     }

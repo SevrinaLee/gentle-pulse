@@ -8,9 +8,11 @@ import { SuggestionDrawer } from "./SuggestionDrawer";
 export function InsightCard({
   pattern,
   suggestion,
+  canWrite = true,
 }: {
   pattern: Pattern;
   suggestion: Suggestion | null;
+  canWrite?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -70,6 +72,7 @@ export function InsightCard({
       {open && suggestion && (
         <SuggestionDrawer
           suggestion={suggestion}
+          canWrite={canWrite}
           onClose={() => setOpen(false)}
           onIgnored={() => {
             setOpen(false);

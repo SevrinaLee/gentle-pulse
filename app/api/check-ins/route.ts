@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getUserId } from "@/lib/auth";
 import { tagCheckIn } from "@/lib/tagging";
 import { aggregatePatterns } from "@/lib/patterns";
 import { maybeGenerateSuggestions } from "@/lib/suggestions";
 import { logAudit } from "@/lib/audit";
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Please log in to add a check-in." },
+      { status: 401 },
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const rawText = typeof body?.raw_text === "string" ? body.raw_text.trim() : "";
   const mood = typeof body?.mood === "string" ? body.mood : null;
@@ -17,11 +27,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createClient();
-
   const { data: checkIn, error: insertError } = await supabase
     .from("check_ins")
-    .insert({ mood, raw_text: rawText })
+    .insert({ mood, raw_text: rawText, user_id: userId })
     .select()
     .single();
 
@@ -36,6 +44,7 @@ export async function POST(request: Request) {
     action: "check_in.submitted",
     target_table: "check_ins",
     target_id: checkIn.id,
+    user_id: userId,
     payload: { mood },
   });
 
@@ -57,6 +66,7 @@ export async function POST(request: Request) {
     .from("friction_tags")
     .insert({
       check_in_id: checkIn.id,
+      user_id: userId,
       category: tagResult.category,
       category_source: tagResult.failed ? null : tagResult.source,
       category_confidence: tagResult.category_confidence,
@@ -73,12 +83,13 @@ export async function POST(request: Request) {
     action: "check_in.tagged",
     target_table: "friction_tags",
     target_id: frictionTag?.id,
+    user_id: userId,
     payload: { category: tagResult.category, failed: tagResult.failed },
   });
 
   if (!tagResult.failed) {
-    const updatedPatterns = await aggregatePatterns(supabase);
-    await maybeGenerateSuggestions(supabase, updatedPatterns);
+    const updatedPatterns = await aggregatePatterns(supabase, userId);
+    await maybeGenerateSuggestions(supabase, updatedPatterns, userId);
   }
 
   return NextResponse.json({ checkIn, frictionTag }, { status: 200 });

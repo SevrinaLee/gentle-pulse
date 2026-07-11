@@ -2,7 +2,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const WINDOW_DAYS = 7;
 
-export async function aggregatePatterns(supabase: SupabaseClient) {
+// Aggregates the given user's check-ins from the last 7 days into per-category
+// patterns. All reads and writes are scoped to userId so one user's activity
+// never affects another's patterns.
+export async function aggregatePatterns(
+  supabase: SupabaseClient,
+  userId: string,
+) {
   const periodEnd = new Date();
   const periodStart = new Date(periodEnd);
   periodStart.setDate(periodStart.getDate() - WINDOW_DAYS);
@@ -10,6 +16,7 @@ export async function aggregatePatterns(supabase: SupabaseClient) {
   const { data: recentCheckIns } = await supabase
     .from("check_ins")
     .select("id, time_estimate_minutes")
+    .eq("user_id", userId)
     .gte("created_at", periodStart.toISOString());
 
   if (!recentCheckIns || recentCheckIns.length === 0) return [];
@@ -22,6 +29,7 @@ export async function aggregatePatterns(supabase: SupabaseClient) {
   const { data: tags } = await supabase
     .from("friction_tags")
     .select("category, check_in_id")
+    .eq("user_id", userId)
     .in("check_in_id", checkInIds)
     .not("category", "is", null);
 
@@ -51,10 +59,11 @@ export async function aggregatePatterns(supabase: SupabaseClient) {
       .from("patterns")
       .select("id")
       .eq("category", category)
-      .is("user_id", null)
+      .eq("user_id", userId)
       .maybeSingle();
 
     const row = {
+      user_id: userId,
       category,
       occurrence_count,
       estimated_hours_per_week,
