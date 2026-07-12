@@ -251,6 +251,17 @@ async function main() {
       Array.isArray(bReadsAProfile.json) && bReadsAProfile.json.length === 0,
       `rows=${bReadsAProfile.json?.length}`);
 
+    // Privilege escalation: RLS authorizes which ROW a user can update, not
+    // which COLUMN — a user can PATCH their own profile row directly, so the
+    // is_founder flag must be protected by its own trigger (0006), not RLS.
+    const escalation = await rest(`profiles?id=eq.${A.id}`, {
+      token: A.token, method: "PATCH",
+      body: { is_founder: true }, prefer: "return=representation",
+    });
+    const escalated = Array.isArray(escalation.json) && escalation.json[0]?.is_founder === true;
+    check(1, "User cannot self-grant is_founder via direct PATCH", !escalated,
+      `is_founder=${escalation.json?.[0]?.is_founder}`);
+
     // ── GATE 3: BRUTE-FORCE DEFENSE ─────────────────────────────────────────
     let sawRateLimit = false;
     let serverUp = true;

@@ -18,6 +18,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 4 — User journey visualization](#stage-4--user-journey-visualization)
 - [Stage 5 — Navigation, mobile & account management](#stage-5--navigation-mobile--account-management)
 - [Stage 6 — Email + password authentication](#stage-6--email--password-authentication)
+- [Stage 7 — Founder account flag](#stage-7--founder-account-flag)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -330,6 +331,38 @@ verification work, plus one (`death_draconite@hotmail.com`) that doesn't
 match any test pattern used in this project — left untouched and flagged to
 the user rather than deleted, since destroying a possibly-real account isn't
 a call to make unilaterally.
+
+---
+
+## Stage 7 — Founder account flag
+
+`death_draconite@hotmail.com` (flagged in Stage 6) was confirmed by the user
+as their own account, to be marked as a founder account with full access to
+all features, never gated behind a future billing/paywall.
+
+**What was built:** migration `0005_founder_flag.sql` adds `is_founder
+boolean` to `profiles` (default `false`) and sets it `true` for that account.
+No feature currently checks this flag — there is no billing/paywall in the
+app yet (see the Billing placeholder on `/account`) — it exists purely so
+that whenever paywall logic is built, it has a bypass ready to check.
+
+**A real vulnerability found and fixed before this shipped, not after:**
+Postgres RLS's "users can update their own profile row" policy (Stage 5)
+authorizes which *row* a user may touch, not which *columns*. Tested this
+directly: created a throwaway user, signed in as them, and sent a raw PATCH
+straight to the Supabase REST API (bypassing the app's own account-update
+route, which never touches `is_founder`) — and it successfully set
+`is_founder: true` on their own row. Any authenticated user could have
+granted themselves founder status.
+
+Fixed with `0006_protect_founder_flag.sql`: a `BEFORE UPDATE` trigger that
+silently reverts any change to `is_founder` unless the request is
+authenticated as `service_role` (which the client is never given — only
+server-side scripts holding `SUPABASE_SERVICE_ROLE_KEY` have it). Re-ran the
+exact same exploit attempt afterward: the row update still succeeds (other
+fields like `display_name` still save normally) but `is_founder` comes back
+unchanged. Added as a permanent regression check in `tests/security.mjs` —
+**20/20 passing.**
 
 ---
 
