@@ -5,7 +5,6 @@ import {
   getTopPattern,
   getActiveSuggestionForPattern,
 } from "@/lib/queries";
-import { NavBar } from "@/components/NavBar";
 import { DemoBanner } from "@/components/DemoBanner";
 import { CheckInForm } from "@/components/CheckInForm";
 import { FrictionLog } from "@/components/FrictionLog";
@@ -27,8 +26,7 @@ export default async function Home() {
 
     return (
       <main className="min-h-screen pb-24">
-        <NavBar authed={!isDemo} />
-        <div className="max-w-2xl mx-auto px-4 space-y-6 pt-2">
+        <div className="max-w-2xl mx-auto px-4 space-y-6 pt-4 md:pt-6">
           {isDemo && <DemoBanner />}
 
           {topPattern && (
@@ -55,7 +53,6 @@ export default async function Home() {
   } catch {
     return (
       <main className="min-h-screen">
-        <NavBar authed={!isDemo} />
         <div className="max-w-2xl mx-auto px-4 pt-8">
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-6 text-sm">
             Couldn&apos;t load your check-ins right now. Try refreshing the page.

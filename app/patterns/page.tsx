@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getScopeId } from "@/lib/auth";
 import { getPatternsRanked } from "@/lib/queries";
-import { NavBar } from "@/components/NavBar";
 import { DemoBanner } from "@/components/DemoBanner";
 
 export const dynamic = "force-dynamic";
@@ -15,13 +14,9 @@ export default async function PatternsPage() {
 
     return (
       <main className="min-h-screen pb-24">
-        <NavBar authed={!isDemo} />
-        {isDemo && (
-          <div className="max-w-2xl mx-auto px-4 pt-2">
-            <DemoBanner />
-          </div>
-        )}
-        <div className="max-w-2xl mx-auto px-4 pt-2 space-y-6">
+        <div className="max-w-2xl mx-auto px-4 pt-4 md:pt-6 space-y-6">
+          {isDemo && <DemoBanner />}
+
           <h1 className="text-lg font-semibold text-indigo-deep">
             Your top frustrations
           </h1>
@@ -64,7 +59,6 @@ export default async function PatternsPage() {
   } catch {
     return (
       <main className="min-h-screen">
-        <NavBar authed={!isDemo} />
         <div className="max-w-2xl mx-auto px-4 pt-8">
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-6 text-sm">
             Couldn&apos;t load your patterns right now. Try refreshing the page.

@@ -239,6 +239,18 @@ async function main() {
     } catch { /* server not up — skip, reported below */ }
     check(4, "service_role key absent from served homepage HTML", !bundleLeak);
 
+    // profiles table (Name/Nickname, added with account features): anon
+    // cannot read any row, and one user cannot read another's profile.
+    const anonProfiles = await rest("profiles?select=id", { token: ANON });
+    check(4, "Anonymous cannot read any profiles row",
+      Array.isArray(anonProfiles.json) && anonProfiles.json.length === 0,
+      `rows=${Array.isArray(anonProfiles.json) ? anonProfiles.json.length : anonProfiles.status}`);
+
+    const bReadsAProfile = await rest(`profiles?id=eq.${A.id}`, { token: B.token });
+    check(1, "User B cannot read User A's profile",
+      Array.isArray(bReadsAProfile.json) && bReadsAProfile.json.length === 0,
+      `rows=${bReadsAProfile.json?.length}`);
+
     // ── GATE 3: BRUTE-FORCE DEFENSE ─────────────────────────────────────────
     let sawRateLimit = false;
     let serverUp = true;
