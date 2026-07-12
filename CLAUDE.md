@@ -74,6 +74,23 @@ gates below, then report detailed results — only after ALL verification tests 
 Never weaken a passing security test to make a feature ship. If a gate can't be met, stop and
 report it instead of completing silently.
 
+## Documentation (binding — keep the build log current)
+`docs/BUILD_LOG.md` is the stage-by-stage narrative of how this app was built —
+what shipped, why, bugs found and how they were fixed, and how each stage was
+verified — with diagrams in `docs/assets/`. It exists so a teammate who wasn't
+in the room can understand how the app came to be.
+
+**Treat updating `docs/BUILD_LOG.md` as part of finishing any meaningful feature
+built through Claude Code in this repo — add a new stage section (reasoning +
+verification, not just a diff summary), regenerate `docs/assets/final-journey.svg`
+if the user journey changed, without needing to be asked.** A PDF can be
+generated from it on request (Markdown is the source of truth; the PDF is a
+generated artifact, not committed).
+
+**Caveat:** this only covers work done through Claude Code. A teammate shipping
+a feature directly (not through this workflow) should update it via the README
+instead — this log can't know about work it wasn't part of.
+
 ## Deploy & data (binding — this stack is already provisioned)
 - **Deploy by git, never by CLI.** `git add -A && git commit -m "…" && git push` to `main`;
   Vercel auto-deploys from GitHub. Do NOT run `vercel deploy` / `vercel --prod` with local

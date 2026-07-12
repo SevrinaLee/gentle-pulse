@@ -1,0 +1,41 @@
+<svg viewBox="0 0 1000 320" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Stage A — Core loop (Sprints 1–3)</title>
+<desc>Single shared demo tenant, no login: seed data and insight card visible to anyone, submit a check-in, heuristic AI tagging, pattern aggregation, and a suggestion drawer once a category recurs three times.</desc>
+<defs>
+  <marker id="a1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0,0 L8,4 L0,8 Z" fill="#9a8fc4"/>
+  </marker>
+</defs>
+<rect width="1000" height="320" fill="#ffffff"/>
+<text x="40" y="34" font-family="system-ui,sans-serif" font-size="18" font-weight="700" fill="#2e2360">Stage A — Core loop (Sprints 1–3)</text>
+<text x="40" y="54" font-family="system-ui,sans-serif" font-size="12.5" fill="#6b6280">No login yet — one shared public demo tenant. Everything below is live.</text>
+
+<g font-family="system-ui,sans-serif">
+  <rect x="40" y="76" width="280" height="60" rx="10" fill="#f3f0fa" stroke="#d8d0ea"/>
+  <text x="54" y="112" font-size="13.5" font-weight="600" fill="#2e2360">Demo seed data + insight card</text>
+
+  <rect x="360" y="76" width="280" height="60" rx="10" fill="#f3f0fa" stroke="#d8d0ea"/>
+  <text x="374" y="112" font-size="13.5" font-weight="600" fill="#2e2360">Submit check-in (mood + text)</text>
+
+  <rect x="680" y="76" width="280" height="60" rx="10" fill="#f3f0fa" stroke="#d8d0ea"/>
+  <text x="694" y="112" font-size="13.5" font-weight="600" fill="#2e2360">AI tags category &amp; time*</text>
+
+  <line x1="320" y1="106" x2="360" y2="106" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#a1)"/>
+  <line x1="640" y1="106" x2="680" y2="106" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <line x1="820" y1="136" x2="820" y2="160" stroke="#9a8fc4" stroke-width="1.5"/>
+  <line x1="820" y1="160" x2="500" y2="160" stroke="#9a8fc4" stroke-width="1.5"/>
+  <line x1="500" y1="160" x2="500" y2="184" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="360" y="184" width="280" height="60" rx="10" fill="#f3f0fa" stroke="#d8d0ea"/>
+  <text x="374" y="220" font-size="13.5" font-weight="600" fill="#2e2360">Pattern aggregation (7-day)</text>
+
+  <line x1="640" y1="214" x2="680" y2="214" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="680" y="184" width="280" height="60" rx="10" fill="#f3f0fa" stroke="#d8d0ea"/>
+  <text x="694" y="212" font-size="13.5" font-weight="600" fill="#2e2360">Suggestion (≥3) + drawer</text>
+  <text x="694" y="230" font-size="11" fill="#6b6280">prompt / template / n8n / ignore</text>
+</g>
+
+<text x="40" y="296" font-family="system-ui,sans-serif" font-size="10.5" fill="#8a8098">* heuristic keyword tagger — GPT-4o upgrade path wired but no key configured yet.</text>
+</svg>

@@ -1,0 +1,200 @@
+<svg viewBox="0 0 1000 1130" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Gentle Pulse — current user journey and build status</title>
+<desc>Flowchart of the Gentle Pulse user journey as of the navigation, mobile, and account-management milestone: anonymous demo, magic-link login, the core check-in-to-suggestion loop, secondary actions, navigation and account management, a cross-cutting security status grid, and a backlog of three remaining items (voice input, email digest, real GPT-4o suggestion generation).</desc>
+
+<defs>
+  <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0,0 L8,4 L0,8 Z" fill="#9a8fc4"/>
+  </marker>
+</defs>
+
+<rect width="1000" height="1130" fill="#ffffff"/>
+
+<text x="56" y="30" font-family="system-ui,sans-serif" font-size="21" font-weight="700" fill="#2e2360">Gentle Pulse — User Journey &amp; Build Status</text>
+<text x="56" y="50" font-family="system-ui,sans-serif" font-size="12.5" fill="#6b6280">Current state — every box's badge shows what's actually shipped</text>
+
+<circle cx="60" cy="78" r="5" fill="#1e8a5f"/>
+<text x="72" y="82" font-family="system-ui,sans-serif" font-size="11.5" fill="#6b6280">Live &amp; verified</text>
+<circle cx="230" cy="78" r="5" fill="#b7791b"/>
+<text x="242" y="82" font-family="system-ui,sans-serif" font-size="11.5" fill="#6b6280">Ready / optional upgrade</text>
+<circle cx="440" cy="78" r="5" fill="#6b7280"/>
+<text x="452" y="82" font-family="system-ui,sans-serif" font-size="11.5" fill="#6b6280">Backlog (Sprint 5)</text>
+
+<line x1="56" y1="98" x2="944" y2="98" stroke="#e5e0f0" stroke-width="1"/>
+
+<!-- SECTION 1 -->
+<text x="56" y="122" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">① Anonymous demo — no login required</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="144" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="270" y="154" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="298" y="167" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="70" y="184" font-size="13.5" font-weight="600" fill="#2e2360">Visit gentle-pulse.vercel.app</text>
+
+  <rect x="360" y="144" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="574" y="154" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="602" y="167" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="374" y="184" font-size="13.5" font-weight="600" fill="#2e2360">See demo check-ins + insight</text>
+
+  <rect x="664" y="144" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="154" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="167" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="184" font-size="13.5" font-weight="600" fill="#2e2360">Prompted to log in for own data</text>
+
+  <line x1="336" y1="176" x2="360" y2="176" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="176" x2="664" y2="176" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+</g>
+<line x1="500" y1="208" x2="500" y2="238" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="512" y="227" font-family="system-ui,sans-serif" font-size="10.5" font-style="italic" fill="#6b6280">clicks "Log in"</text>
+
+<!-- SECTION 2 -->
+<text x="56" y="256" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">② Magic-link login (Supabase Auth)</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="270" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="298" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="70" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Enter email on /login</text>
+
+  <rect x="360" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="574" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="602" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="374" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Open emailed magic link</text>
+
+  <rect x="664" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Session set, redirected home</text>
+
+  <line x1="336" y1="310" x2="360" y2="310" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="310" x2="664" y2="310" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+</g>
+<line x1="500" y1="342" x2="500" y2="372" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="512" y="361" font-family="system-ui,sans-serif" font-size="10.5" font-style="italic" fill="#6b6280">now viewing own data</text>
+
+<!-- SECTION 3 -->
+<text x="56" y="390" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">③ Core loop — log a frustration (logged in)</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="412" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="270" y="422" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="298" y="435" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="70" y="452" font-size="13.5" font-weight="600" fill="#2e2360">Submit check-in (mood + text)</text>
+
+  <rect x="360" y="412" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="566" y="422" width="64" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="598" y="435" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE*</text>
+  <text x="374" y="452" font-size="13.5" font-weight="600" fill="#2e2360">AI tags category &amp; time</text>
+
+  <rect x="664" y="412" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="422" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="435" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="452" font-size="13.5" font-weight="600" fill="#2e2360">Pattern aggregation (7-day)</text>
+
+  <line x1="336" y1="444" x2="360" y2="444" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="444" x2="664" y2="444" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+</g>
+<line x1="500" y1="476" x2="500" y2="502" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g font-family="system-ui,sans-serif">
+  <rect x="360" y="502" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="574" y="512" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="602" y="525" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="374" y="542" font-size="13.5" font-weight="600" fill="#2e2360">Suggestion generated (≥3)</text>
+
+  <rect x="664" y="502" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="512" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="525" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="542" font-size="13.5" font-weight="600" fill="#2e2360">Insight card + Show-Me-How</text>
+  <line x1="640" y1="534" x2="664" y2="534" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+</g>
+<line x1="652" y1="566" x2="500" y2="596" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="512" y="588" font-family="system-ui,sans-serif" font-size="10.5" font-style="italic" fill="#6b6280">available anytime</text>
+
+<!-- SECTION 4 -->
+<text x="56" y="614" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">④ Other actions (available anytime, logged in)</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="636" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="270" y="646" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="298" y="659" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="70" y="676" font-size="13.5" font-weight="600" fill="#2e2360">Sigh button → follow-up note</text>
+
+  <rect x="360" y="636" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="574" y="646" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="602" y="659" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="374" y="676" font-size="13.5" font-weight="600" fill="#2e2360">Delete a check-in</text>
+
+  <rect x="664" y="636" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="646" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="659" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="676" font-size="13.5" font-weight="600" fill="#2e2360">Patterns screen (ranked)</text>
+</g>
+
+<!-- SECTION 5 (NEW): Navigation & Account -->
+<text x="56" y="724" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">⑤ Navigation &amp; account management</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="746" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="270" y="756" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="298" y="769" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="70" y="778" font-size="13" font-weight="600" fill="#2e2360">Sidebar (desktop) /</text>
+  <text x="70" y="794" font-size="13" font-weight="600" fill="#2e2360">hamburger drawer (mobile)</text>
+
+  <rect x="360" y="746" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="574" y="756" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="602" y="769" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="374" y="786" font-size="13.5" font-weight="600" fill="#2e2360">Account: name, email, billing</text>
+
+  <rect x="664" y="746" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
+  <rect x="878" y="756" width="56" height="18" rx="9" fill="#1e8a5f"/>
+  <text x="906" y="769" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
+  <text x="678" y="786" font-size="13.5" font-weight="600" fill="#2e2360">Delete account</text>
+  <text x="678" y="802" font-size="11" fill="#6b6280">type-DELETE confirm, full purge</text>
+</g>
+
+<!-- SECTION 6: Security band -->
+<rect x="40" y="836" width="920" height="130" rx="12" fill="#f6f4fb"/>
+<text x="56" y="860" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#2e2360">⑥ Security &amp; data — cross-cutting, verified via 17/17 automated tests</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="872" width="280" height="42" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="72" cy="893" r="4.5" fill="#1e8a5f"/>
+  <text x="84" y="897" font-size="12.5" font-weight="600" fill="#2e2360">Owner-scoped RLS</text>
+
+  <rect x="360" y="872" width="280" height="42" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="376" cy="893" r="4.5" fill="#1e8a5f"/>
+  <text x="388" y="897" font-size="12.5" font-weight="600" fill="#2e2360">SQL-injection safe</text>
+
+  <rect x="664" y="872" width="280" height="42" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="680" cy="893" r="4.5" fill="#1e8a5f"/>
+  <text x="692" y="897" font-size="12.5" font-weight="600" fill="#2e2360">Rate-limited logins</text>
+
+  <rect x="56" y="920" width="280" height="34" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="72" cy="937" r="4.5" fill="#1e8a5f"/>
+  <text x="84" y="941" font-size="12.5" font-weight="600" fill="#2e2360">Audit log (append-only, private)</text>
+
+  <rect x="360" y="920" width="280" height="34" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="376" cy="937" r="4.5" fill="#1e8a5f"/>
+  <text x="388" y="941" font-size="12.5" font-weight="600" fill="#2e2360">17/17 security tests pass</text>
+
+  <rect x="664" y="920" width="280" height="34" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
+  <circle cx="680" cy="937" r="4.5" fill="#1e8a5f"/>
+  <text x="692" y="941" font-size="12.5" font-weight="600" fill="#2e2360">Profiles table isolated too</text>
+</g>
+
+<!-- SECTION 7: Backlog band -->
+<rect x="40" y="982" width="920" height="108" rx="12" fill="#f6f4fb"/>
+<text x="56" y="1006" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#2e2360">⑦ Backlog — everything else is shipped</text>
+<g font-family="system-ui,sans-serif">
+  <rect x="56" y="1020" width="280" height="56" rx="9" fill="#ffffff" stroke="#d8d0ea" stroke-dasharray="5,4"/>
+  <rect x="66" y="1028" width="66" height="16" rx="8" fill="#6b7280"/>
+  <text x="99" y="1040" font-size="8.5" font-weight="700" fill="white" text-anchor="middle">SPRINT 5</text>
+  <text x="66" y="1064" font-size="12" font-weight="600" fill="#2e2360">Voice input (Whisper)</text>
+
+  <rect x="360" y="1020" width="280" height="56" rx="9" fill="#ffffff" stroke="#d8d0ea" stroke-dasharray="5,4"/>
+  <rect x="370" y="1028" width="66" height="16" rx="8" fill="#6b7280"/>
+  <text x="403" y="1040" font-size="8.5" font-weight="700" fill="white" text-anchor="middle">SPRINT 5</text>
+  <text x="370" y="1064" font-size="12" font-weight="600" fill="#2e2360">Weekly email digest</text>
+
+  <rect x="664" y="1020" width="280" height="56" rx="9" fill="#ffffff" stroke="#d8d0ea" stroke-dasharray="5,4"/>
+  <rect x="674" y="1028" width="66" height="16" rx="8" fill="#b7791b"/>
+  <text x="707" y="1040" font-size="8.5" font-weight="700" fill="white" text-anchor="middle">OPTIONAL</text>
+  <text x="674" y="1064" font-size="12" font-weight="600" fill="#2e2360">Real GPT-4o suggestions</text>
+</g>
+
+<text x="56" y="1108" font-family="system-ui,sans-serif" font-size="10.5" fill="#8a8098">* AI tagging runs on a heuristic engine today — adding OPENAI_API_KEY to Vercel switches it to real GPT-4o tagging with no code changes. Suggestion generation is heuristic-only (see backlog).</text>
+</svg>
