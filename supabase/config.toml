@@ -6,7 +6,7 @@ project_id = "ywqrkukyqwspfqyqbtik"
 # redirect allowlist. Do not run `config push` with a partial [auth] block.
 
 [auth]
-# Redirect allowlist so magic-link confirmations land back on the app.
+# Redirect allowlist so password-reset links land back on the app.
 site_url = "https://gentle-pulse.vercel.app"
 additional_redirect_urls = [
   "https://gentle-pulse.vercel.app/**",
@@ -22,8 +22,22 @@ verify_enabled = true
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
-enable_confirmations = true
+# Instant signup: user picks a password and is logged in immediately, no
+# confirmation email required. Chosen because Supabase's default (shared,
+# rate-limited) email service is unreliable here — see docs/BUILD_LOG.md.
+# Revisit once a real SMTP provider (e.g. Resend) is configured.
+enable_confirmations = false
 secure_password_change = false
 max_frequency = "1m0s"
 otp_length = 8
 otp_expiry = 3600
+# NOTE: custom email templates (e.g. a cleaner token_hash-based recovery
+# link) are BLOCKED on this project's plan — `supabase config push` fails
+# with "Email template modification is not available for free tier projects
+# using the default email provider." Confirmed by generating a real recovery
+# link and following its redirect: Supabase's hosted verify endpoint lands
+# on our redirectTo URL with the session as a URL HASH FRAGMENT
+# (#access_token=...&refresh_token=...), not a query param — a server route
+# can never see a fragment. app/reset-password/page.tsx is a client
+# component that reads it directly instead. Revisit once a custom SMTP
+# provider is configured (unlocks template customization too).

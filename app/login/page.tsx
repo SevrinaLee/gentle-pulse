@@ -2,32 +2,39 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+type Mode = "login" | "signup";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setStatus("sending");
+    setSubmitting(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`/api/auth/${mode === "login" ? "login" : "signup"}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         setError(body?.error ?? "Something went wrong. Please try again.");
-        setStatus("idle");
         return;
       }
-      setStatus("sent");
+      router.push("/");
+      router.refresh();
     } catch {
       setError("Couldn't reach the server. Check your connection and try again.");
-      setStatus("idle");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -40,54 +47,104 @@ export default function LoginPage() {
           </Link>
           <h1 className="text-2xl font-semibold text-indigo-deep">Gentle Pulse</h1>
           <p className="text-sm text-indigo-deep/60">
-            Log in to start your own private friction log.
+            {mode === "login"
+              ? "Log in to your private friction log."
+              : "Create an account to start your own private friction log."}
           </p>
         </div>
 
-        {status === "sent" ? (
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center space-y-2">
-            <p className="text-2xl">📬</p>
-            <p className="text-sm text-indigo-deep">
-              Check your inbox — we sent a magic link to{" "}
-              <span className="font-medium">{email}</span>. Click it to log in.
-            </p>
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
-          >
-            <label className="block text-sm text-indigo-deep/70">
-              Email
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="mt-1 w-full rounded-xl border border-indigo-deep/15 p-3 text-sm text-indigo-deep focus:outline-none focus:ring-2 focus:ring-rose-gold"
-              />
-            </label>
-
-            {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-3">
-                {error}
-              </div>
-            )}
-
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
+        >
+          <div className="flex gap-1 bg-off-white rounded-xl p-1">
             <button
-              type="submit"
-              disabled={status === "sending"}
-              className="w-full px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+              type="button"
+              onClick={() => {
+                setMode("login");
+                setError(null);
+              }}
+              className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition ${
+                mode === "login"
+                  ? "bg-white text-indigo-deep shadow-sm"
+                  : "text-indigo-deep/50"
+              }`}
             >
-              {status === "sending" ? "Sending…" : "Send magic link"}
+              Log in
             </button>
-            <p className="text-xs text-indigo-deep/40 text-center">
-              No password needed — we&apos;ll email you a one-time link.
-            </p>
-          </form>
-        )}
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signup");
+                setError(null);
+              }}
+              className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition ${
+                mode === "signup"
+                  ? "bg-white text-indigo-deep shadow-sm"
+                  : "text-indigo-deep/50"
+              }`}
+            >
+              Sign up
+            </button>
+          </div>
+
+          <label className="block text-sm text-indigo-deep/70">
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              className="mt-1 w-full rounded-xl border border-indigo-deep/15 p-3 text-sm text-indigo-deep focus:outline-none focus:ring-2 focus:ring-rose-gold"
+            />
+          </label>
+
+          <label className="block text-sm text-indigo-deep/70">
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === "signup" ? 8 : undefined}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              className="mt-1 w-full rounded-xl border border-indigo-deep/15 p-3 text-sm text-indigo-deep focus:outline-none focus:ring-2 focus:ring-rose-gold"
+            />
+          </label>
+
+          {mode === "login" && (
+            <div className="text-right -mt-2">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-rose-gold hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-3">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+          >
+            {submitting
+              ? mode === "login"
+                ? "Logging in…"
+                : "Creating account…"
+              : mode === "login"
+                ? "Log in"
+                : "Create account"}
+          </button>
+        </form>
       </div>
     </main>
   );

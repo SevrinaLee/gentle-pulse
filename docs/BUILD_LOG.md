@@ -17,6 +17,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 3 — Sprint 4: Lock it down](#stage-3--sprint-4-lock-it-down)
 - [Stage 4 — User journey visualization](#stage-4--user-journey-visualization)
 - [Stage 5 — Navigation, mobile & account management](#stage-5--navigation-mobile--account-management)
+- [Stage 6 — Email + password authentication](#stage-6--email--password-authentication)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -256,6 +257,79 @@ visual glance might have missed if the timing lined up differently, but it's
 why this stage's verification notes read differently from earlier stages.
 
 ![Stage C — navigation & account](assets/stage-c-nav-account.svg)
+
+---
+
+## Stage 6 — Email + password authentication
+
+**Requested:** the magic-link login sent during manual testing never arrived
+(or didn't work) — switch to normal email + password signup/login, with
+"Forgot password?".
+
+**Root cause investigation, not just a swap:** before writing any code, this
+was diagnosed properly rather than assumed. Two distinct problems were found,
+and password auth alone would only have fixed one of them:
+
+1. **Email deliverability.** No custom SMTP provider is configured — the
+   project uses Supabase's shared, rate-limited default email service, which
+   is explicitly not meant for production traffic. Likely (partial) cause of
+   the magic link never arriving.
+2. **A deeper link-format mismatch, found empirically.** The magic-link route
+   built in Stage 3 (`app/auth/confirm`) expected a `token_hash` + `type`
+   query param, which only works if Supabase's auth email template is
+   customized to link straight at that route. Generating a real recovery
+   link via the admin API and following its actual redirect chain with curl
+   showed Supabase's **default** template instead links to its own hosted
+   verify endpoint, which redirects back to the app with the session encoded
+   as a **URL hash fragment** (`#access_token=...&refresh_token=...`) — never
+   as a query param. A server route can never see a fragment (browsers don't
+   send them over HTTP), so `/auth/confirm` would have silently failed on
+   *any* real email-triggered link, deliverability aside. Attempting to fix
+   this by customizing the email template turned out to be blocked outright:
+   `supabase config push` returned "Email template modification is not
+   available for free tier projects using the default email provider."
+
+**Decisions made (asked, not assumed):**
+- **Email delivery:** keep Supabase's default provider for now; wire the
+  code so a real provider (e.g. Resend) can be dropped in later without
+  redesigning anything. Deferred by choice, not by default.
+- **Signup confirmation:** disabled entirely (`enable_confirmations = false`
+  in `supabase/config.toml`) — sign up with a password and you're logged in
+  immediately, no email round-trip needed to create an account at all.
+
+**What was built:**
+- `/login` rebuilt with an email+password form and a Log in / Sign up toggle,
+  a "Forgot password?" link, `/api/auth/signup` and a rewritten
+  `/api/auth/login` (now `signInWithPassword`, still rate-limited per IP).
+- `/forgot-password` (request a reset email) and `/reset-password` — the
+  latter is a **client component**, not a server route, specifically because
+  of the hash-fragment finding above: on mount it reads
+  `window.location.hash`, extracts the tokens, and calls
+  `supabase.auth.setSession()` before showing the new-password form.
+- The now-unused `app/auth/confirm` server route (built for the token_hash
+  flow that the default email template doesn't support) was removed as dead
+  code rather than left around; the reasoning is preserved as a comment in
+  `supabase/config.toml` in case a paid plan or custom SMTP later unlocks
+  template customization and makes that cleaner flow viable again.
+- `tests/security.mjs` gained brute-force checks for `/api/auth/signup` and
+  `/api/auth/forgot-password` (same gate as login) — **19/19 passing.**
+
+**Verification — the whole loop, for real, not just the happy path:**
+sign up → instantly logged in → logged out → logged back in with the same
+password → requested a reset → **generated a real recovery link via the
+admin API, resolved its actual redirect chain with curl exactly as a real
+email client would, and navigated the browser straight to the resulting
+`#access_token=...` URL** → confirmed the reset form appeared → set a new
+password → confirmed the *old* password now returns 401 and the *new* one
+returns 200. Every step checked against real HTTP responses, not assumed
+from reading the code.
+
+**Housekeeping found along the way:** cleaning up test accounts after this
+round turned up several stray ones left over from earlier sessions'
+verification work, plus one (`death_draconite@hotmail.com`) that doesn't
+match any test pattern used in this project — left untouched and flagged to
+the user rather than deleted, since destroying a possibly-real account isn't
+a call to make unilaterally.
 
 ---
 

@@ -270,6 +270,35 @@ async function main() {
     } else {
       check(3, "Login endpoint rate-limits rapid attempts (429)", sawRateLimit);
     }
+
+    // Same gate for signup and forgot-password — both create/trigger email
+    // side effects and must not be freely hammerable. Same email each loop
+    // iteration: only the first signup attempt actually creates an account
+    // (the rest 400 on "already registered"), so cleanup only has one row.
+    const bruteSignupEmail = `brute.signup+${Date.now()}@example.com`;
+    for (const [path, body] of [
+      ["/api/auth/signup", { email: bruteSignupEmail, password: "whatever123" }],
+      ["/api/auth/forgot-password", { email: "brute.forgot@example.com" }],
+    ]) {
+      let limited = false;
+      if (serverUp) {
+        for (let i = 0; i < 9; i++) {
+          const r = await fetch(`${APP_URL}${path}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (r.status === 429) { limited = true; break; }
+        }
+      }
+      check(3, `${path} rate-limits rapid attempts (429)`, serverUp && limited,
+        serverUp ? "" : "dev server not reachable at " + APP_URL);
+    }
+    if (serverUp) {
+      const { data: list } = await admin.auth.admin.listUsers();
+      const bruteUser = list?.users?.find((u) => u.email === bruteSignupEmail);
+      if (bruteUser) await admin.auth.admin.deleteUser(bruteUser.id).catch(() => {});
+    }
   } finally {
     // ── Cleanup ─────────────────────────────────────────────────────────────
     // Purge every row owned by the throwaway users via the service role (it

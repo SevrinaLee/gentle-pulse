@@ -9,13 +9,12 @@ function clientIp(request: Request): string {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 export async function POST(request: Request) {
   const ip = clientIp(request);
 
-  // Brute-force defense: cap rapid login attempts per IP. Checked before any
-  // body validation so this gate holds regardless of what's in the request.
-  const rl = checkRateLimit(`login:${ip}`);
+  const rl = checkRateLimit(`signup:${ip}`, { windowMs: 60_000, max: 5 });
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "Too many attempts. Please wait a moment and try again." },
@@ -27,28 +26,39 @@ export async function POST(request: Request) {
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body?.password === "string" ? body.password : "";
 
-  if (!EMAIL_RE.test(email) || !password) {
+  if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
-      { error: "Enter your email and password." },
+      { error: "Enter a valid email address." },
+      { status: 400 },
+    );
+  }
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return NextResponse.json(
+      { error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` },
       { status: 400 },
     );
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) {
-    if (error.status === 429) {
-      return NextResponse.json(
-        { error: "Too many attempts. Please wait a moment and try again." },
-        { status: 429 },
-      );
-    }
-    // Uniform message regardless of whether the email exists or the
-    // password is wrong — avoids leaking which one was incorrect.
+    const status = error.status === 429 ? 429 : 400;
+    // Supabase returns a distinct message for an already-registered email;
+    // pass it through as-is since signup (unlike login) is fine revealing
+    // "this email is taken" — that's normal UX for account creation.
     return NextResponse.json(
-      { error: "Incorrect email or password." },
-      { status: 401 },
+      { error: error.message || "Could not create your account. Please try again." },
+      { status },
+    );
+  }
+
+  // Email confirmations are disabled (see supabase/config.toml), so signUp
+  // returns an active session immediately — no email round-trip needed.
+  if (!data.session) {
+    return NextResponse.json(
+      { error: "Account created, but sign-in failed. Please log in." },
+      { status: 500 },
     );
   }
 

@@ -13,9 +13,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function POST(request: Request) {
   const ip = clientIp(request);
 
-  // Brute-force defense: cap rapid login attempts per IP. Checked before any
-  // body validation so this gate holds regardless of what's in the request.
-  const rl = checkRateLimit(`login:${ip}`);
+  const rl = checkRateLimit(`forgot-password:${ip}`, { windowMs: 60_000, max: 5 });
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "Too many attempts. Please wait a moment and try again." },
@@ -25,30 +23,31 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
-  const password = typeof body?.password === "string" ? body.password : "";
 
-  if (!EMAIL_RE.test(email) || !password) {
+  if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
-      { error: "Enter your email and password." },
+      { error: "Enter a valid email address." },
       { status: 400 },
     );
   }
 
+  const origin = new URL(request.url).origin;
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    if (error.status === 429) {
-      return NextResponse.json(
-        { error: "Too many attempts. Please wait a moment and try again." },
-        { status: 429 },
-      );
-    }
-    // Uniform message regardless of whether the email exists or the
-    // password is wrong — avoids leaking which one was incorrect.
+  // Supabase's default email template (custom templates are blocked on this
+  // plan) links to its own hosted verify endpoint, which redirects here with
+  // the session as a URL hash fragment — see app/reset-password/page.tsx and
+  // the note in supabase/config.toml.
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/reset-password`,
+  });
+
+  // Uniform response regardless of whether the email exists — this endpoint
+  // must not be usable to enumerate accounts.
+  if (error && error.status === 429) {
     return NextResponse.json(
-      { error: "Incorrect email or password." },
-      { status: 401 },
+      { error: "Too many attempts. Please wait a moment and try again." },
+      { status: 429 },
     );
   }
 

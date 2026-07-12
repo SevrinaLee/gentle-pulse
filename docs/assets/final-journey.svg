@@ -1,6 +1,6 @@
 <svg viewBox="0 0 1000 1130" xmlns="http://www.w3.org/2000/svg" role="img">
 <title>Gentle Pulse — current user journey and build status</title>
-<desc>Flowchart of the Gentle Pulse user journey as of the navigation, mobile, and account-management milestone: anonymous demo, magic-link login, the core check-in-to-suggestion loop, secondary actions, navigation and account management, a cross-cutting security status grid, and a backlog of three remaining items (voice input, email digest, real GPT-4o suggestion generation).</desc>
+<desc>Flowchart of the Gentle Pulse user journey as of the email+password auth milestone: anonymous demo, email/password sign up or log in with instant sessions and an emailed password-reset link, the core check-in-to-suggestion loop, secondary actions, navigation and account management, a cross-cutting security status grid, and a backlog of three remaining items (voice input, email digest, real GPT-4o suggestion generation).</desc>
 
 <defs>
   <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
@@ -47,22 +47,22 @@
 <text x="512" y="227" font-family="system-ui,sans-serif" font-size="10.5" font-style="italic" fill="#6b6280">clicks "Log in"</text>
 
 <!-- SECTION 2 -->
-<text x="56" y="256" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">② Magic-link login (Supabase Auth)</text>
+<text x="56" y="256" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#4b3d8f">② Email + password login (Supabase Auth)</text>
 <g font-family="system-ui,sans-serif">
   <rect x="56" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
   <rect x="270" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
   <text x="298" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
-  <text x="70" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Enter email on /login</text>
+  <text x="70" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Sign up or log in on /login</text>
 
   <rect x="360" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
   <rect x="574" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
   <text x="602" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
-  <text x="374" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Open emailed magic link</text>
+  <text x="374" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Instant session, no email needed</text>
 
   <rect x="664" y="278" width="280" height="64" rx="10" fill="#ffffff" stroke="#d8d0ea"/>
   <rect x="878" y="288" width="56" height="18" rx="9" fill="#1e8a5f"/>
   <text x="906" y="301" font-size="9" font-weight="700" fill="white" text-anchor="middle">LIVE</text>
-  <text x="678" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Session set, redirected home</text>
+  <text x="678" y="318" font-size="13.5" font-weight="600" fill="#2e2360">Forgot password → emailed reset</text>
 
   <line x1="336" y1="310" x2="360" y2="310" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
   <line x1="640" y1="310" x2="664" y2="310" stroke="#9a8fc4" stroke-width="1.5" marker-end="url(#arrow)"/>
@@ -149,7 +149,7 @@
 
 <!-- SECTION 6: Security band -->
 <rect x="40" y="836" width="920" height="130" rx="12" fill="#f6f4fb"/>
-<text x="56" y="860" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#2e2360">⑥ Security &amp; data — cross-cutting, verified via 17/17 automated tests</text>
+<text x="56" y="860" font-family="system-ui,sans-serif" font-size="13.5" font-weight="700" fill="#2e2360">⑥ Security &amp; data — cross-cutting, verified via 19/19 automated tests</text>
 <g font-family="system-ui,sans-serif">
   <rect x="56" y="872" width="280" height="42" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
   <circle cx="72" cy="893" r="4.5" fill="#1e8a5f"/>
@@ -169,7 +169,7 @@
 
   <rect x="360" y="920" width="280" height="34" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
   <circle cx="376" cy="937" r="4.5" fill="#1e8a5f"/>
-  <text x="388" y="941" font-size="12.5" font-weight="600" fill="#2e2360">17/17 security tests pass</text>
+  <text x="388" y="941" font-size="12.5" font-weight="600" fill="#2e2360">19/19 security tests pass</text>
 
   <rect x="664" y="920" width="280" height="34" rx="9" fill="#ffffff" stroke="#d8d0ea"/>
   <circle cx="680" cy="937" r="4.5" fill="#1e8a5f"/>

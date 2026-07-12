@@ -7,7 +7,7 @@ import { MobileHeader } from "@/components/MobileHeader";
 import { MobileDrawer } from "@/components/MobileDrawer";
 
 // Routes that render full-screen with no sidebar/header chrome.
-const BARE_ROUTES = ["/login"];
+const BARE_ROUTES = ["/login", "/forgot-password", "/reset-password"];
 
 export function AppShell({
   authed,
