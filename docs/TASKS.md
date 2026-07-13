@@ -68,10 +68,10 @@ parts that need one are separable from the parts that don't.
 **Goal:** Give users a reason to come back — the single biggest gap today. Nothing
 currently pulls a user back after they close the tab.
 
-**Ships without any external account (do these first):**
-- [ ] Streak tracking: consecutive-day check-in streak per user (derived in query or a DB view)
-- [ ] Streak chip on the Home insight card + Patterns screen ("🔥 3-day streak"), in the existing Spotify-Wrapped visual language
-- [ ] In-app "streak at risk" nudge copy (e.g. "you're on a 4-day streak — one check-in keeps it alive"); no push/email
+**Ships without any external account (do these first):** ✅ Shipped
+- [x] Streak tracking: consecutive-day check-in streak per user — timezone-aware, computed in the viewer's local calendar days (`lib/streak.ts`, verified against fixtures incl. DST + tz-boundary cases)
+- [x] Streak chip on Home + Patterns screen ("🔥 3-day streak"), in the Spotify-Wrapped visual language (`components/StreakBadge.tsx`)
+- [x] In-app "streak at risk" nudge ("One check-in today keeps it alive.") when a streak stands on yesterday
 
 **Needs an email provider (land after the above):**
 - [ ] Weekly digest email via Resend: top drain + one suggestion

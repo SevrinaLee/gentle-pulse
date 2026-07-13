@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getScopeId } from "@/lib/auth";
-import { getPatternsRanked } from "@/lib/queries";
+import { getPatternsRanked, getCheckInTimestamps } from "@/lib/queries";
 import { DemoBanner } from "@/components/DemoBanner";
+import { StreakBadge } from "@/components/StreakBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,16 @@ export default async function PatternsPage() {
 
   try {
     const patterns = await getPatternsRanked(supabase, scopeId);
+    const streakTimestamps = isDemo
+      ? []
+      : await getCheckInTimestamps(supabase, scopeId);
 
     return (
       <main className="min-h-screen pb-24">
         <div className="max-w-2xl mx-auto px-4 pt-4 md:pt-6 space-y-6">
           {isDemo && <DemoBanner />}
+
+          {!isDemo && <StreakBadge timestamps={streakTimestamps} />}
 
           <h1 className="text-lg font-semibold text-indigo-deep">
             Your top frustrations

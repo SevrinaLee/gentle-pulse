@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getScopeId } from "@/lib/auth";
 import {
   getCheckInsWithTags,
+  getCheckInTimestamps,
   getTopPattern,
   getActiveSuggestionForPattern,
 } from "@/lib/queries";
@@ -9,6 +10,7 @@ import { DemoBanner } from "@/components/DemoBanner";
 import { CheckInForm } from "@/components/CheckInForm";
 import { FrictionLog } from "@/components/FrictionLog";
 import { InsightCard } from "@/components/InsightCard";
+import { StreakBadge } from "@/components/StreakBadge";
 import { SighButton } from "@/components/SighButton";
 
 export const dynamic = "force-dynamic";
@@ -23,11 +25,18 @@ export default async function Home() {
     const suggestion = topPattern
       ? await getActiveSuggestionForPattern(supabase, topPattern.id, scopeId)
       : null;
+    // Streaks are a signed-in feature — the demo dataset is static, so a
+    // streak off seed rows would just be perpetually stale.
+    const streakTimestamps = isDemo
+      ? []
+      : await getCheckInTimestamps(supabase, scopeId);
 
     return (
       <main className="min-h-screen pb-24">
         <div className="max-w-2xl mx-auto px-4 space-y-6 pt-4 md:pt-6">
           {isDemo && <DemoBanner />}
+
+          {!isDemo && <StreakBadge timestamps={streakTimestamps} />}
 
           {topPattern && (
             <InsightCard

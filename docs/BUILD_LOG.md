@@ -19,6 +19,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 5 — Navigation, mobile & account management](#stage-5--navigation-mobile--account-management)
 - [Stage 6 — Email + password authentication](#stage-6--email--password-authentication)
 - [Stage 7 — Founder account flag](#stage-7--founder-account-flag)
+- [Stage 8 — Retention: check-in streaks](#stage-8--retention-check-in-streaks-sprint-5-first-half)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -366,6 +367,57 @@ unchanged. Added as a permanent regression check in `tests/security.mjs` —
 
 ---
 
+## Stage 8 — Retention: check-in streaks (Sprint 5, first half)
+
+Kicked off the [Sprint 5 retention roadmap](./TASKS.md) with the half that
+needs no external account: check-in streaks. Retention is the app's biggest
+gap — nothing previously pulled a user back after they closed the tab.
+
+**The one real design decision — timezone.** A streak is consecutive calendar
+days with a check-in, and "a day" has to mean the *user's local* day: a
+check-in at 11pm and one at 1am are two different days to them, ~2h apart. But
+the Home and Patterns pages render as server components, and the server can't
+know the browser's timezone. So the streak is computed **client-side**:
+`lib/streak.ts` is a pure, dependency-free function that buckets ISO
+timestamps into local `YYYY-MM-DD` day keys and does all consecutive-day math
+on those keys (anchored at UTC noon so a DST shift can never move a date across
+midnight). `components/StreakBadge.tsx` runs it in a `useEffect` — which also
+sidesteps a server/client hydration mismatch on this time-dependent UI — and
+renders nothing until mounted, and nothing when the streak is 0.
+
+**What was built:**
+- `lib/streak.ts` — `computeStreak()` returning current streak, longest,
+  `loggedToday`, and `atRisk` (a live streak standing on yesterday).
+- `getCheckInTimestamps()` — a lightweight owner-scoped query pulling only
+  `created_at` (90 days), reused by both pages.
+- `StreakBadge` — two states in the Spotify-Wrapped visual language:
+  celebratory ("🔥 3-day streak") and at-risk ("One check-in today keeps it
+  alive."). Signed-in only — the demo dataset is static, so a streak off seed
+  rows would be perpetually stale.
+- Wired into Home (above the insight card) and Patterns (above the ranking).
+
+**Verified — logic and UI, not just typecheck:**
+- 11 fixtures against the real compiled `computeStreak`, all passing —
+  including a check-in at 02:00 UTC correctly bucketed to the previous evening
+  in a negative-offset timezone, month/year rollovers, and a DST-spring-forward
+  boundary.
+- Drove the real UI in the browser (timezone happened to be Asia/Singapore,
+  GMT+8): seeded a user with 3 consecutive days → "🔥 3-day streak"; reseeded to
+  end yesterday → the at-risk nudge appeared; then **submitted a check-in and
+  watched the badge flip from at-risk 2-day to celebratory 3-day live** — the
+  nudge's whole point. Confirmed the anonymous/demo view shows no badge and the
+  console has no hydration warnings.
+- Fixed one bug spotted only by looking at the rendered output: "3-**days**
+  streak" → "3-**day** streak" (the compound modifier is always singular).
+- Security suite still **20/20** (one spurious mid-run failure traced to
+  running `next build` against the live turbopack dev server — they share
+  `.next` — not a code regression; clean re-run passed).
+
+The second half of Sprint 5 (weekly digest email) is deferred: it needs a real
+email provider, which the user is holding off on (see Stage 6).
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
@@ -377,7 +429,7 @@ leverage-per-effort:
 
 | Item | Sprint | Note |
 |---|---|---|
-| Retention: streaks + weekly digest | Sprint 5 (next) | Highest leverage — nothing pulls users back yet. Streaks ship with no dependency; digest needs an email provider (Resend). |
+| Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
 | Smarter suggestions: tag corrections + GPT-4o copy | Sprint 6 | Corrections need no key; real suggestion generation needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
 | Shareable insight image (growth loop) | Sprint 7 | Fully client-side, no external account. |
 | Voice input + edit check-in + guest→account migration | Sprint 8 | Edit and guest-migration need no key; voice needs a Whisper/transcription key. |

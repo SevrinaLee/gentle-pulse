@@ -38,6 +38,25 @@ export async function getCheckInsWithTags(
   }));
 }
 
+// Just the created_at timestamps for a user's recent check-ins — enough to
+// compute a check-in streak without pulling full rows. Ordered newest-first;
+// 90 days of history is plenty for any streak we'd surface.
+export async function getCheckInTimestamps(
+  supabase: SupabaseClient,
+  scopeId: string,
+  limit = 90,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("check_ins")
+    .select("created_at")
+    .eq("user_id", scopeId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return (data ?? []).map((r) => r.created_at as string);
+}
+
 export async function getPatternsRanked(
   supabase: SupabaseClient,
   scopeId: string,
