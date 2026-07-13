@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserId } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/constants";
-import { aggregatePatterns } from "@/lib/patterns";
+import { aggregatePatterns, pruneEmptyCategory } from "@/lib/patterns";
 import { maybeGenerateSuggestions } from "@/lib/suggestions";
 import { logAudit } from "@/lib/audit";
 
@@ -81,13 +81,7 @@ export async function PATCH(
   // category's pattern if it no longer has any tags in the window (aggregate
   // only upserts categories that still have tags, so its absence means empty).
   const updatedPatterns = await aggregatePatterns(supabase, userId);
-  if (oldCategory && !updatedPatterns.some((p) => p.category === oldCategory)) {
-    await supabase
-      .from("patterns")
-      .delete()
-      .eq("user_id", userId)
-      .eq("category", oldCategory);
-  }
+  await pruneEmptyCategory(supabase, userId, oldCategory, updatedPatterns);
   await maybeGenerateSuggestions(supabase, updatedPatterns, userId);
 
   return NextResponse.json({ ok: true, frictionTag: updated });

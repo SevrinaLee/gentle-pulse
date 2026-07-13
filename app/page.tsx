@@ -11,6 +11,8 @@ import { CheckInForm } from "@/components/CheckInForm";
 import { FrictionLog } from "@/components/FrictionLog";
 import { InsightCard } from "@/components/InsightCard";
 import { StreakBadge } from "@/components/StreakBadge";
+import { GuestCheckIn } from "@/components/GuestCheckIn";
+import { GuestCheckInMigrator } from "@/components/GuestCheckInMigrator";
 import { SighButton } from "@/components/SighButton";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +38,9 @@ export default async function Home() {
         <div className="max-w-2xl mx-auto px-4 space-y-6 pt-4 md:pt-6">
           {isDemo && <DemoBanner />}
 
+          {isDemo && <GuestCheckIn />}
+
+          {!isDemo && <GuestCheckInMigrator />}
           {!isDemo && <StreakBadge timestamps={streakTimestamps} />}
 
           {topPattern && (

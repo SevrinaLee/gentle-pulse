@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Pattern, Suggestion } from "@/lib/types";
 import { SuggestionDrawer } from "./SuggestionDrawer";
+import { ShareInsight } from "./ShareInsight";
 
 export function InsightCard({
   pattern,
@@ -55,18 +56,24 @@ export function InsightCard({
               </span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="px-4 py-2 rounded-xl bg-rose-gold text-white text-sm font-medium hover:bg-rose-gold/90 transition"
-          >
-            Show Me How
-          </button>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="px-4 py-2 rounded-xl bg-rose-gold text-white text-sm font-medium hover:bg-rose-gold/90 transition"
+            >
+              Show Me How
+            </button>
+            {canWrite && <ShareInsight pattern={pattern} suggestion={suggestion} />}
+          </div>
         </div>
       ) : (
-        <p className="text-sm text-off-white/60">
-          No suggestion for this one yet — check back after your next check-in.
-        </p>
+        <div className="space-y-3">
+          <p className="text-sm text-off-white/60">
+            No suggestion for this one yet — check back after your next check-in.
+          </p>
+          {canWrite && <ShareInsight pattern={pattern} suggestion={null} />}
+        </div>
       )}
 
       {open && suggestion && (

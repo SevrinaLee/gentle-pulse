@@ -21,6 +21,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 7 — Founder account flag](#stage-7--founder-account-flag)
 - [Stage 8 — Retention: check-in streaks](#stage-8--retention-check-in-streaks-sprint-5-first-half)
 - [Stage 9 — Tag corrections](#stage-9--tag-corrections-sprint-6-no-key-half)
+- [Stage 10 — Share, edit, guest capture](#stage-10--growth--friction-share-edit-guest-capture)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -468,6 +469,47 @@ A's tag) — security suite now **21/21**.
 
 ---
 
+## Stage 10 — Growth & friction: share, edit, guest capture
+
+Three no-dependency expansions in one pass — Sprint 7 in full, plus Sprint 8's
+two key-free items (voice input stays deferred, needs a Whisper key).
+
+**Sprint 7 — shareable insight image.** A "Share" action on the insight card
+renders a branded 1080×1080 PNG entirely client-side (`lib/share-image.ts`
+draws onto a canvas — no server round-trip, no new dependency). A modal previews
+it before anything leaves the device; Download always works, and a **Web Share
+sheet** appears only where `navigator.canShare({files})` is supported (feature-
+detected). Privacy is structural, not a setting: the renderer only receives the
+aggregate stat (category, check-in count, hrs/week), so raw check-in text
+*can't* leak — an opt-in toggle adds only the template suggestion headline.
+Verified by decoding the generated PNG and eyeballing it: branded card, correct
+stat, wordmark, no user text; the toggle regenerates it with the fix included.
+
+**Sprint 8a — edit a check-in.** Previously you could only delete + re-submit.
+An inline ✎ editor (`FrictionLog`) PATCHes `/api/check-ins/[id]`; when the text
+changes, the entry is **re-tagged and patterns re-aggregate**, reusing the same
+old-category pruning as corrections. That pruning logic was extracted from the
+Stage 9 route into a shared `pruneEmptyCategory` helper (`lib/patterns.ts`) now
+used by both the correction and edit routes. Verified: edited a check-in's text,
+watched it re-tag Customer Support → Product Uploads live, and confirmed in the
+DB that a `check_in.edited` audit row was written and the stale pattern pruned.
+
+**Sprint 8b — guest → account migration.** The anonymous home now offers "log
+your first frustration" instead of only showing demo data. The chosen mechanism
+is **localStorage, not a server-side guest row**: the entry is stashed
+client-side and redirects to signup, and `GuestCheckInMigrator` (mounted on the
+signed-in home) replays it into the new account on first load — nothing touches
+the server until there's an account to own it. The replay **claims the entry
+from storage before POSTing and restores it on failure**, so React's dev
+double-invoke can't double-submit and a transient error can't lose it. Verified
+the whole arc in-browser: logged a guest check-in → localStorage held it →
+signed up → the check-in appeared in the new account (tagged) and localStorage
+was cleared.
+
+Typecheck, production build, and the security suite (**21/21**) all clean.
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
@@ -481,8 +523,8 @@ leverage-per-effort:
 |---|---|---|
 | Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
 | Smarter suggestions: tag corrections ✅ + GPT-4o copy | Sprint 6 (in progress) | Tag corrections **shipped** (Stage 9, live). Real suggestion generation still needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
-| Shareable insight image (growth loop) | Sprint 7 | Fully client-side, no external account. |
-| Voice input + edit check-in + guest→account migration | Sprint 8 | Edit and guest-migration need no key; voice needs a Whisper/transcription key. |
+| Shareable insight image (growth loop) ✅ | Sprint 7 (shipped) | Client-side canvas PNG, live (Stage 10). |
+| Edit check-in ✅ + guest→account migration ✅ + voice | Sprint 8 (in progress) | Edit + guest-migration **shipped** (Stage 10). Voice still needs a Whisper key. |
 
 Explicitly out of scope: dashboard trend charts (a v1 PRD non-goal — see TASKS.md).
 

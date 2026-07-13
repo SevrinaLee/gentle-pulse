@@ -100,31 +100,31 @@ improves over time.
 
 ---
 
-## Sprint 7 — Shareable insight (growth loop)
+## Sprint 7 — Shareable insight (growth loop) ✅ Shipped (Stage 10)
 **Goal:** Turn the insight card into an organic acquisition channel. Fully
 client-side — no external account, no server round-trip.
 
-- [ ] "Share my biggest drain" action on the insight card → renders a branded image (canvas or SVG→PNG) of the top pattern + hours/week, in the app's visual language
-- [ ] Image generated client-side; a preview is shown before anything leaves the device
-- [ ] Download + native share sheet (Web Share API) on mobile
-- [ ] Raw check-in text is **excluded by default** — only the aggregate stat is on the card — with an explicit opt-in to include detail
+- [x] "Share" action on the insight card → renders a branded 1080×1080 PNG (canvas) of the top pattern + hrs/week, in the app's visual language (`lib/share-image.ts`)
+- [x] Image generated client-side; a preview is shown in a modal before anything leaves the device
+- [x] Download + native share sheet (Web Share API with files, feature-detected; Download-only fallback otherwise)
+- [x] Raw check-in text is **excluded by construction** — the renderer only receives the aggregate stat — with an explicit opt-in to add the (template) suggestion headline
 
-**Definition of Done:** From the insight card a user can generate and download/share an image of their top time-drain stat. No raw entry text appears in the image unless the user explicitly opts in.
+**Definition of Done:** From the insight card a user can generate and download/share an image of their top time-drain stat. No raw entry text appears in the image unless the user explicitly opts in. ✅ (verified: rendered PNG shows only category + stat + wordmark)
 
 ---
 
 ## Sprint 8 — Lower logging friction
 **Goal:** Make capturing a frustration faster, and let anonymous visitors try before committing.
 
-**Ships without any external account:**
-- [ ] Edit a check-in: today you can only delete + re-submit. Add inline edit (PATCH `/api/check-ins/[id]`) with re-tagging + re-aggregation
-- [ ] Guest → account migration: let an anonymous visitor submit **one** real check-in that migrates into their account on signup (instead of only viewing demo data). On first signup, re-assign that check-in's `user_id` to the new `auth.uid()`, then re-run tagging/aggregation
+**Ships without any external account:** ✅ Shipped (Stage 10)
+- [x] Edit a check-in: inline ✎ editor in the friction log → PATCH `/api/check-ins/[id]`; a text change re-tags the entry and re-aggregates patterns (old category pruned via the shared `pruneEmptyCategory` helper)
+- [x] Guest → account migration: anonymous home shows a "log your first frustration" form; the entry is stashed in `localStorage` and replayed into the account by `GuestCheckInMigrator` right after signup (claim-then-restore-on-failure so it can't double-submit or be lost)
 
-**Needs an API key:**
+**Needs an API key (deferred):**
 - [ ] Voice input: MediaRecorder → Blob → POST `/api/transcribe` → Whisper → prefills the check-in text field
 - **Depends on:** a transcription key (OpenAI Whisper or equivalent).
 
-**Definition of Done:** Edit an existing check-in and see its tag update. A guest who submits one check-in then signs up keeps it in their new account. With a transcription key, tap 🎤 → speak → text appears in the field.
+**Definition of Done:** Edit an existing check-in and see its tag update. A guest who submits one check-in then signs up keeps it in their new account. With a transcription key, tap 🎤 → speak → text appears in the field. ✅ (edit + guest-migration verified end-to-end; voice deferred)
 
 ---
 

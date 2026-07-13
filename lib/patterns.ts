@@ -2,6 +2,25 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const WINDOW_DAYS = 7;
 
+// After a re-aggregation, a category that lost its last tag in the window won't
+// appear in `currentPatterns` (aggregatePatterns only upserts categories that
+// still have tags). Delete its now-stale pattern row so it stops showing.
+// Used when a check-in moves categories (correction) or its text changes (edit).
+export async function pruneEmptyCategory(
+  supabase: SupabaseClient,
+  userId: string,
+  category: string | null,
+  currentPatterns: { category: string }[],
+) {
+  if (!category) return;
+  if (currentPatterns.some((p) => p.category === category)) return;
+  await supabase
+    .from("patterns")
+    .delete()
+    .eq("user_id", userId)
+    .eq("category", category);
+}
+
 // Aggregates the given user's check-ins from the last 7 days into per-category
 // patterns. All reads and writes are scoped to userId so one user's activity
 // never affects another's patterns.
