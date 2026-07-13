@@ -372,13 +372,17 @@ unchanged. Added as a permanent regression check in `tests/security.mjs` —
 
 Everything in the diagram above marked **LIVE** has been built, deployed, and
 verified against the real production site and database — not just typechecked.
-What's left:
+What's left is planned as Sprints 5–8 in [TASKS.md](./TASKS.md), sequenced by
+leverage-per-effort:
 
-| Item | Status | Note |
+| Item | Sprint | Note |
 |---|---|---|
-| Voice input (Whisper) | Backlog | Sprint 5, not started |
-| Weekly email digest (Resend) | Backlog | Sprint 5, not started |
-| Real GPT-4o suggestion generation | Optional upgrade | Tagging already auto-upgrades with `OPENAI_API_KEY`; suggestion *copy* is still template-based only |
+| Retention: streaks + weekly digest | Sprint 5 (next) | Highest leverage — nothing pulls users back yet. Streaks ship with no dependency; digest needs an email provider (Resend). |
+| Smarter suggestions: tag corrections + GPT-4o copy | Sprint 6 | Corrections need no key; real suggestion generation needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
+| Shareable insight image (growth loop) | Sprint 7 | Fully client-side, no external account. |
+| Voice input + edit check-in + guest→account migration | Sprint 8 | Edit and guest-migration need no key; voice needs a Whisper/transcription key. |
+
+Explicitly out of scope: dashboard trend charts (a v1 PRD non-goal — see TASKS.md).
 
 ---
 
