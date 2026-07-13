@@ -148,6 +148,25 @@ async function main() {
       appDel === 401 || appDel === "no-server",
       `status=${appDel}`);
 
+    // Tag corrections (Sprint 6): A owns a friction_tag; B must not be able to
+    // re-categorize it. The app route is owner-scoped, and RLS is the backstop
+    // tested here directly — B's PATCH to A's tag must affect 0 rows.
+    const insTag = await rest("friction_tags", {
+      token: A.token, method: "POST",
+      body: { user_id: A.id, check_in_id: aRow.id, category: "Marketing" },
+      prefer: "return=representation",
+    });
+    const aTag = Array.isArray(insTag.json) ? insTag.json[0] : insTag.json;
+    if (aTag?.id) {
+      const bCorrectsA = await rest(`friction_tags?id=eq.${aTag.id}`, {
+        token: B.token, method: "PATCH",
+        body: { category: "Admin & Bookkeeping" }, prefer: "return=representation",
+      });
+      const bTagCount = Array.isArray(bCorrectsA.json) ? bCorrectsA.json.length : -1;
+      check(1, "User B cannot correct User A's friction tag", bTagCount === 0,
+        `affected=${bTagCount}`);
+    }
+
     // ── GATE 2: SQL INJECTION ───────────────────────────────────────────────
     const payloads = [
       "' OR '1'='1",

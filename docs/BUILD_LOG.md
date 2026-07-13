@@ -20,6 +20,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 6 — Email + password authentication](#stage-6--email--password-authentication)
 - [Stage 7 — Founder account flag](#stage-7--founder-account-flag)
 - [Stage 8 — Retention: check-in streaks](#stage-8--retention-check-in-streaks-sprint-5-first-half)
+- [Stage 9 — Tag corrections](#stage-9--tag-corrections-sprint-6-no-key-half)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -418,6 +419,55 @@ email provider, which the user is holding off on (see Stage 6).
 
 ---
 
+## Stage 9 — Tag corrections (Sprint 6, no-key half)
+
+Second no-dependency expansion: let users fix a miscategorized check-in, so the
+data driving their insights reflects reality — and capture the correction as
+signal for a future model.
+
+**Design decisions:**
+- **The corrected value overwrites `category`**, because that's the column
+  pattern aggregation reads — a correction that didn't change what patterns see
+  would be pointless. The AI's original guess is preserved in a new
+  `original_category` column (migration `0007`), set only on the *first*
+  correction, so a later re-edit doesn't erase the model's initial answer. That
+  pairing (what the model said vs. what the human chose) is the training signal.
+- **A single canonical `CATEGORIES` list** (`lib/constants.ts`) now drives the
+  correction dropdown, the API's validation, and the GPT-4o tagger's prompt —
+  previously the category set was implicit in the heuristic keyword map. One
+  source of truth prevents the dropdown and the tagger from drifting apart.
+- **Pattern reconciliation — the subtle part.** Correcting a check-in from
+  category A to B has to make A's pattern shrink, not just B's grow.
+  `aggregatePatterns` recomputes every category that still has tags in the
+  window, so B and a still-populated A are handled. The gap is when A loses its
+  *last* tag: aggregate only upserts categories that still exist, so a drained
+  A would linger. The route closes this by deleting A's pattern when it's absent
+  from the recomputed set — which also quietly fixes a latent staleness bug the
+  app already had (patterns never shrank on delete or window-expiry either).
+
+**What was built:**
+- `0007_tag_corrections.sql` — `original_category` on `friction_tags`.
+- `PATCH /api/friction-tags/[id]` — owner-scoped; validates the category, writes
+  `category_source='user-correction'`, `category_confidence=1`,
+  `category_review_status='corrected'`, preserves `original_category`, audits
+  `friction_tag.corrected {from,to}`, re-aggregates, reconciles the old
+  category, regenerates suggestions.
+- `CategoryBadge` became an inline editor: a prominent "fix?" link on
+  low-confidence tags (the one-tap affordance) and a subtle ✎ on confident
+  ones, both opening a `<select>` of the canonical categories.
+
+**Verified end-to-end in the browser** (not just typecheck): submitted
+"uploading products … to shopee" → heuristic tagged it **Product Uploads** with
+"fix?" showing; corrected it to **Marketing**; then confirmed directly in the DB
+that the tag now reads `category=Marketing, original_category=Product Uploads,
+source=user-correction, confidence=1, review_status=corrected`, an audit row
+`{from: Product Uploads, to: Marketing}` was written, and **patterns reconciled
+correctly — the Product Uploads pattern was gone and only Marketing (count 1)
+remained**. Added a cross-user isolation regression (user B cannot PATCH user
+A's tag) — security suite now **21/21**.
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
@@ -430,7 +480,7 @@ leverage-per-effort:
 | Item | Sprint | Note |
 |---|---|---|
 | Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
-| Smarter suggestions: tag corrections + GPT-4o copy | Sprint 6 | Corrections need no key; real suggestion generation needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
+| Smarter suggestions: tag corrections ✅ + GPT-4o copy | Sprint 6 (in progress) | Tag corrections **shipped** (Stage 9, live). Real suggestion generation still needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
 | Shareable insight image (growth loop) | Sprint 7 | Fully client-side, no external account. |
 | Voice input + edit check-in + guest→account migration | Sprint 8 | Edit and guest-migration need no key; voice needs a Whisper/transcription key. |
 

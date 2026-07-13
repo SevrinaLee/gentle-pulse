@@ -54,7 +54,7 @@ export function FrictionLog({
           <div className="flex-1 min-w-0">
             <p className="text-sm text-indigo-deep">{checkIn.raw_text}</p>
             <div className="mt-2 flex items-center gap-2 flex-wrap">
-              <CategoryBadge tag={checkIn.friction_tag} />
+              <CategoryBadge tag={checkIn.friction_tag} editable={canWrite} />
               <span className="text-xs text-indigo-deep/40">
                 {timeAgo(checkIn.created_at)}
               </span>

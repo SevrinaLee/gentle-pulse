@@ -87,10 +87,10 @@ currently pulls a user back after they close the tab.
 **Goal:** Make suggestions feel personal, and let users correct the AI so quality
 improves over time.
 
-**Ships without any external account:**
-- [ ] Tag-correction UI: re-assign a miscategorized check-in's category (the DB already carries `review_status`/confidence from Sprint 2) → writes the correction + an audit row
-- [ ] Feed corrections back as signal: store `corrected_category`, set `review_status = 'corrected'`
-- [ ] One-tap "fix this" affordance on the existing "AI uncertain" (low-confidence) badge
+**Ships without any external account:** ✅ Shipped (Stage 9)
+- [x] Tag-correction UI: inline `<select>` on each check-in re-assigns its category → PATCH `/api/friction-tags/[id]`, writes an audit row, and re-aggregates patterns (old category's pattern reconciled away if it empties out)
+- [x] Feed corrections back as signal: `category` holds the corrected value (so aggregation reflects truth), the AI's first guess is preserved in a new `original_category` column, and `category_review_status` is set to `'corrected'`
+- [x] One-tap "fix?" affordance surfaced prominently on low-confidence ("AI uncertain") tags; a subtle ✎ on confident ones
 
 **Needs an API key:**
 - [ ] Real GPT-4o suggestion generation: replace template-only copy in `generate_suggestion()` with an LLM call, falling back to the current templates when the key is absent (same gate pattern as tagging)

@@ -1,3 +1,5 @@
+import { CATEGORIES } from "./constants";
+
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   "Customer Support": [
     "customer",
@@ -137,7 +139,9 @@ async function openaiTag(rawText: string): Promise<TagResult> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY not configured");
 
-  const categories = Object.keys(CATEGORY_KEYWORDS).concat("Uncategorized");
+  // Single source of truth for the category set — shared with the correction
+  // dropdown and API validation (lib/constants.ts).
+  const categories = [...CATEGORIES];
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",

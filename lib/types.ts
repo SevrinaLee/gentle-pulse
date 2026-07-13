@@ -1,4 +1,4 @@
-export type ReviewStatus = "unreviewed" | "reviewed" | "pending";
+export type ReviewStatus = "unreviewed" | "reviewed" | "pending" | "corrected";
 
 export interface CheckIn {
   id: string;
@@ -17,6 +17,9 @@ export interface FrictionTag {
   user_id: string | null;
   check_in_id: string;
   category: string | null;
+  // The tagger's original guess, preserved when a user later corrects the
+  // category (null until the first correction). Kept as training signal.
+  original_category: string | null;
   category_source: string | null;
   category_confidence: number | null;
   category_review_status: ReviewStatus;
