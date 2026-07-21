@@ -22,6 +22,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 8 — Retention: check-in streaks](#stage-8--retention-check-in-streaks-sprint-5-first-half)
 - [Stage 9 — Tag corrections](#stage-9--tag-corrections-sprint-6-no-key-half)
 - [Stage 10 — Share, edit, guest capture](#stage-10--growth--friction-share-edit-guest-capture)
+- [Stage 11 — GPT-4o suggestion copy, prepped](#stage-11--gpt-4o-suggestion-copy-prepped-to-activate)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -510,6 +511,48 @@ Typecheck, production build, and the security suite (**21/21**) all clean.
 
 ---
 
+## Stage 11 — GPT-4o suggestion copy, prepped to activate
+
+Sprint 6's key-dependent half, built now so it switches on the moment an
+`OPENAI_API_KEY` exists — no code change, same as tagging. Suggestion *copy* was
+still template-only; this makes it personalizable while staying safe without a
+key.
+
+**Structure mirrors `lib/tagging.ts` deliberately.** A new
+`lib/suggestion-content.ts` owns all the copy logic: the hand-written
+`TEMPLATES`, plus `generateSuggestionContent(pattern)` — a GPT-4o branch gated on
+`OPENAI_API_KEY` that falls back to the template when the key is **absent or the
+call fails**. `suggestions.ts` shrank to pure DB orchestration that just calls
+it and records `body_source` (`heuristic-fallback` → `openai-gpt-4o` when the
+key is live).
+
+**Two deliberate safety choices:**
+- **A failed LLM call is never worse than today.** Unlike tagging (which leaves a
+  failed tag null and pending), suggestions always want *some* copy, so any
+  error path returns the template — the user never sees a blank suggestion.
+- **Malformed model output can't degrade the card.** A pure
+  `coerceSuggestion(parsed, fallback)` validates the JSON field-by-field —
+  non-empty strings, integer stars clamped to 1–5, `template_text` may be an
+  explicit `null` — and fills anything missing or wrong-typed from the template.
+- **No raw check-in text is sent to OpenAI.** The generator only receives the
+  aggregate pattern (category, count, hrs/week), so activating the key doesn't
+  start shipping user notes off-device.
+
+**Verification without a key:**
+- `lib/suggestion-content.ts` has only type-only imports, so I compiled it
+  standalone and ran **9 fixtures** against the real `coerceSuggestion` /
+  `templateContent` / `generateSuggestionContent`: valid JSON used, partial and
+  garbage and `null` responses each fall back correctly, stars clamp, explicit
+  `null` snippet respected, and the no-key path returns the template.
+- End-to-end on the running app (no key set): signed up a user, submitted three
+  Product Uploads check-ins, and confirmed the generated suggestion row still
+  writes with `body_source=heuristic-fallback` — proving the refactor didn't
+  disturb the live generation path. Security suite still **21/21**.
+
+**To activate:** add `OPENAI_API_KEY` to Vercel and redeploy.
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
@@ -522,7 +565,7 @@ leverage-per-effort:
 | Item | Sprint | Note |
 |---|---|---|
 | Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
-| Smarter suggestions: tag corrections ✅ + GPT-4o copy | Sprint 6 (in progress) | Tag corrections **shipped** (Stage 9, live). Real suggestion generation still needs `OPENAI_API_KEY` (tagging already auto-upgrades with it). |
+| Smarter suggestions: tag corrections ✅ + GPT-4o copy ⚡ | Sprint 6 (code complete) | Tag corrections **shipped** (Stage 9). GPT-4o copy **built & dormant** (Stage 11) — activates by adding `OPENAI_API_KEY`, no code change. |
 | Shareable insight image (growth loop) ✅ | Sprint 7 (shipped) | Client-side canvas PNG, live (Stage 10). |
 | Edit check-in ✅ + guest→account migration ✅ + voice | Sprint 8 (in progress) | Edit + guest-migration **shipped** (Stage 10). Voice still needs a Whisper key. |
 

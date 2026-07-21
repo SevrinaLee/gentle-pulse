@@ -92,11 +92,11 @@ improves over time.
 - [x] Feed corrections back as signal: `category` holds the corrected value (so aggregation reflects truth), the AI's first guess is preserved in a new `original_category` column, and `category_review_status` is set to `'corrected'`
 - [x] One-tap "fix?" affordance surfaced prominently on low-confidence ("AI uncertain") tags; a subtle ✎ on confident ones
 
-**Needs an API key:**
-- [ ] Real GPT-4o suggestion generation: replace template-only copy in `generate_suggestion()` with an LLM call, falling back to the current templates when the key is absent (same gate pattern as tagging)
-- **Depends on:** `OPENAI_API_KEY` in Vercel env. Tagging already auto-upgrades with this key; this extends the same key to suggestion copy — no new account beyond what tagging already wants.
+**Needs an API key — code shipped, dormant until the key exists (Stage 11):**
+- [x] Real GPT-4o suggestion generation built as `lib/suggestion-content.ts`: a `generateSuggestionContent(pattern)` with a GPT-4o branch gated on `OPENAI_API_KEY`, falling back to the templates when the key is absent **or** the call fails (same gate pattern as tagging). Malformed LLM output is coerced field-by-field back to the template, so it can never produce worse copy.
+- **To activate:** add `OPENAI_API_KEY` to the Vercel env (the same key tagging already wants) and redeploy — no code change. `body_source` flips from `heuristic-fallback` to `openai-gpt-4o`.
 
-**Definition of Done:** A user can re-categorize a check-in and the change persists with an audit row (works today, no key). With `OPENAI_API_KEY` set, a pattern crossing 3 occurrences yields a personalized suggestion; without it, the template still shows.
+**Definition of Done:** A user can re-categorize a check-in and the change persists with an audit row (works today, no key). With `OPENAI_API_KEY` set, a pattern crossing 3 occurrences yields a personalized suggestion; without it, the template still shows. ✅ (no-key path verified end-to-end; coercion unit-tested; LLM path activates on key)
 
 ---
 
