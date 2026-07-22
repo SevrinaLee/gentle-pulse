@@ -24,6 +24,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 10 — Share, edit, guest capture](#stage-10--growth--friction-share-edit-guest-capture)
 - [Stage 11 — GPT-4o suggestion copy, prepped](#stage-11--gpt-4o-suggestion-copy-prepped-to-activate)
 - [Stage 12 — Voice input (Whisper), prepped](#stage-12--voice-input-whisper-prepped-to-activate)
+- [Stage 13 — Weekly digest email (Resend), prepped](#stage-13--weekly-digest-email-resend-prepped-to-activate)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -595,18 +596,62 @@ already wanted by tagging and suggestions.
 
 ---
 
+## Stage 13 — Weekly digest email (Resend), prepped to activate
+
+Sprint 5's second half — the retention email — built dormant on `RESEND_API_KEY`.
+With streaks (Stage 8) already live, this completes the retention loop the moment
+an email provider exists.
+
+**Shape mirrors the other dormant features, with two provider-specific pieces:**
+- **Opt-in** — `digest_opt_in` on `profiles` (migration 0008), freely settable by
+  the owner (unlike `is_founder`, this is the user's own preference, so no
+  protection trigger). A `DigestToggle` on `/account` writes it via
+  `PATCH /api/account/digest`. The whole section only renders when
+  `RESEND_API_KEY` is set — same server-side gate as voice/GPT-4o.
+- **The send** — `lib/digest.ts` runs from a Vercel Cron endpoint using the
+  service-role key: it selects opted-in profiles, looks up each user's email and
+  top pattern + active suggestion, renders the email, and sends it through the
+  Resend API. It never throws for one user — a single bad send just increments a
+  `failed` counter. The pure HTML renderer is split into `lib/digest-email.ts`
+  (unit-testable), and it **HTML-escapes the display name and category** so a
+  user-chosen value can't inject markup into the email.
+- **The schedule** — `vercel.json` registers `/api/cron/weekly-digest` for
+  Sunday 13:00 UTC. The endpoint is **fail-closed**: it requires
+  `Authorization: Bearer $CRON_SECRET` and refuses (401) if the secret is unset
+  or wrong, so nobody can trigger a send run but Vercel Cron.
+
+**Verified the whole pipeline except real delivery:**
+- 9 fixtures against the compiled `renderDigestEmail` — subject/stat/suggestion
+  present, singular "1 hr", null-hours and no-suggestion variants, and
+  HTML-escaping of hostile display-name/category input.
+- *Dormant:* no digest section on `/account`; the cron returns 401 with a
+  missing or wrong secret.
+- *Activated:* set throwaway `RESEND_API_KEY` + `CRON_SECRET`, restarted, then —
+  the opt-in section appeared, toggling it on returned 200, and hitting the cron
+  with the correct secret ran the full pipeline end to end: `{eligible:1, sent:0,
+  failed:1}` — one opted-in user found, their digest rendered, and the Resend
+  send attempted (dummy key → the expected failure). Reverted the throwaway env;
+  security suite still **21/21**.
+
+**To activate:** add `RESEND_API_KEY`, a `DIGEST_FROM_EMAIL` on a Resend-verified
+domain, and a random `CRON_SECRET` to Vercel, then redeploy.
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
 
 Everything in the diagram above marked **LIVE** has been built, deployed, and
 verified against the real production site and database — not just typechecked.
-What's left is planned as Sprints 5–8 in [TASKS.md](./TASKS.md), sequenced by
-leverage-per-effort:
+**Every Sprint 5–8 item is now code-complete:** the no-dependency work is
+shipped and live, and each item that needs an external account/key is built and
+**dormant** — wired end-to-end and verified via throwaway keys, waiting only on
+the real key to switch on with no code change (⚡ below):
 
 | Item | Sprint | Note |
 |---|---|---|
-| Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
+| Retention: streaks ✅ + weekly digest ⚡ | Sprint 5 (code complete) | Streaks **shipped** (Stage 8, live). Weekly digest **built & dormant** (Stage 13) — activates by adding `RESEND_API_KEY` + `CRON_SECRET`, no code change. |
 | Smarter suggestions: tag corrections ✅ + GPT-4o copy ⚡ | Sprint 6 (code complete) | Tag corrections **shipped** (Stage 9). GPT-4o copy **built & dormant** (Stage 11) — activates by adding `OPENAI_API_KEY`, no code change. |
 | Shareable insight image (growth loop) ✅ | Sprint 7 (shipped) | Client-side canvas PNG, live (Stage 10). |
 | Edit check-in ✅ + guest→account migration ✅ + voice ⚡ | Sprint 8 (code complete) | Edit + guest-migration **shipped** (Stage 10). Voice input **built & dormant** (Stage 12) — activates with the same `OPENAI_API_KEY`, no code change. |

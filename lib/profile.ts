@@ -10,6 +10,8 @@ export interface Profile {
   // 0006_protect_founder_flag.sql). No feature currently checks this; it's
   // in place for when a paywall exists.
   is_founder: boolean;
+  // Whether the user opted into the weekly digest email (Sprint 5).
+  digest_opt_in: boolean;
 }
 
 export async function getProfile(

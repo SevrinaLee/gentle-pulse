@@ -4,6 +4,7 @@ import { getProfile } from "@/lib/profile";
 import { ProfileForm } from "@/components/account/ProfileForm";
 import { EmailForm } from "@/components/account/EmailForm";
 import { BillingSection } from "@/components/account/BillingSection";
+import { DigestToggle } from "@/components/account/DigestToggle";
 import { DeleteAccountSection } from "@/components/account/DeleteAccountSection";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,9 @@ export default async function AccountPage() {
   }
 
   const profile = await getProfile(supabase, user.id);
+  // The weekly-digest opt-in only appears once email delivery is configured
+  // (RESEND_API_KEY) — same dormant-until-key pattern as voice/GPT-4o.
+  const digestConfigured = !!process.env.RESEND_API_KEY;
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-2 pb-24 space-y-6">
@@ -30,6 +34,15 @@ export default async function AccountPage() {
         <div className="h-px bg-indigo-deep/10" />
         <EmailForm currentEmail={user.email ?? ""} />
       </section>
+
+      {digestConfigured && (
+        <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+          <h2 className="text-sm font-medium text-indigo-deep/60">
+            Weekly digest
+          </h2>
+          <DigestToggle initialOptIn={profile?.digest_opt_in ?? false} />
+        </section>
+      )}
 
       <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-medium text-indigo-deep/60">Billing</h2>

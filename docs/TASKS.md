@@ -73,13 +73,13 @@ currently pulls a user back after they close the tab.
 - [x] Streak chip on Home + Patterns screen ("🔥 3-day streak"), in the Spotify-Wrapped visual language (`components/StreakBadge.tsx`)
 - [x] In-app "streak at risk" nudge ("One check-in today keeps it alive.") when a streak stands on yesterday
 
-**Needs an email provider (land after the above):**
-- [ ] Weekly digest email via Resend: top drain + one suggestion
-- [ ] Digest opt-in column on `profiles` (default off), toggle on `/account`, respected by the send job
-- [ ] Scheduled Sunday-AM send (Vercel Cron or Supabase scheduled function)
-- **Depends on:** a real SMTP/email provider configured in Supabase. The default Supabase email service is not production-grade (see BUILD_LOG Stage 6) — this is why signup confirmation and magic links were avoided. Set up Resend (or an equivalent already available to you) before this half.
+**Needs an email provider — code shipped, dormant until the key exists (Stage 13):**
+- [x] Weekly digest email via Resend: `lib/digest.ts` builds each opted-in user's top drain + one suggestion (`lib/digest-email.ts` renders the HTML, XSS-escaped) and sends via the Resend API
+- [x] Digest opt-in column on `profiles` (`digest_opt_in`, default off, migration 0008); `DigestToggle` on `/account` (PATCH `/api/account/digest`); the send job filters on it
+- [x] Scheduled Sunday send via Vercel Cron (`vercel.json` → `/api/cron/weekly-digest`, `0 13 * * 0`), authorized by `CRON_SECRET` (fail-closed)
+- **To activate:** add `RESEND_API_KEY` (+ a `DIGEST_FROM_EMAIL` on a Resend-verified domain, and `CRON_SECRET`) to Vercel and redeploy. Until then the opt-in toggle is hidden and the cron reports `skipped`.
 
-**Definition of Done:** A returning user sees their current streak on Home with no email provider configured. Once a provider is set up, a user opted into the digest receives a Sunday email with their top pattern and one suggestion.
+**Definition of Done:** A returning user sees their current streak on Home with no email provider configured. Once a provider is set up, a user opted into the digest receives a Sunday email with their top pattern and one suggestion. ✅ (streaks live; digest opt-in + render + cron send-path verified via a throwaway key — only real delivery awaits a live Resend key)
 
 ---
 
