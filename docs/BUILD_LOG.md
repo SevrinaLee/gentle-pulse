@@ -23,6 +23,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 9 — Tag corrections](#stage-9--tag-corrections-sprint-6-no-key-half)
 - [Stage 10 — Share, edit, guest capture](#stage-10--growth--friction-share-edit-guest-capture)
 - [Stage 11 — GPT-4o suggestion copy, prepped](#stage-11--gpt-4o-suggestion-copy-prepped-to-activate)
+- [Stage 12 — Voice input (Whisper), prepped](#stage-12--voice-input-whisper-prepped-to-activate)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -553,6 +554,47 @@ key is live).
 
 ---
 
+## Stage 12 — Voice input (Whisper), prepped to activate
+
+Sprint 8's last item — dictate a check-in instead of typing — built dormant on
+the **same `OPENAI_API_KEY`** that already gates tagging and suggestions. One key
+now lights up all three.
+
+**The gating is server-side, so there's no separate flag to remember.** The Home
+page (a server component) reads `!!process.env.OPENAI_API_KEY` and passes it to
+`CheckInForm`, which only renders the mic button when true. `/api/transcribe`
+guards the same env independently (503 if unset), so even a hand-crafted request
+can't use it while dormant. Activating is purely "add the key + redeploy" —
+identical to the suggestion prep.
+
+**What was built:**
+- `POST /api/transcribe` — auth-gated, per-user rate-limited (20/min, since each
+  call costs money), 25 MB cap; forwards the uploaded audio Blob to OpenAI's
+  `whisper-1` endpoint and returns `{ text }`. Every failure path returns a
+  friendly message.
+- `components/MicButton.tsx` — `getUserMedia` → `MediaRecorder` → Blob → POST →
+  `onTranscribed(text)`, with idle / recording / transcribing states, graceful
+  microphone-permission and failure handling, and media-stream cleanup.
+- `CheckInForm` renders it only when `voiceEnabled`, appending the transcript to
+  the textarea (so you can dictate then tidy up by hand).
+
+**Verified the whole path except real transcription** (which needs a live key +
+a real mic):
+- *Dormant:* with no key, the mic button is absent and `/api/transcribe` returns
+  401 unauthenticated, 503 authenticated.
+- *Activated:* temporarily set a throwaway `OPENAI_API_KEY` in `.env.local` and
+  restarted — the mic button appeared, `/api/transcribe` got **past** the key
+  guard and forwarded to Whisper (dummy key → 502, i.e. the whole route ran),
+  and clicking the mic fired a real `getUserMedia` request that failed gracefully
+  in the headless pane ("Couldn't access the microphone"). Reverted the throwaway
+  key immediately; confirmed `.env.local` is back to no key and the security
+  suite is still **21/21**.
+
+**To activate:** add `OPENAI_API_KEY` to Vercel and redeploy — the same key
+already wanted by tagging and suggestions.
+
+---
+
 ## Current state summary
 
 ![Final user journey](assets/final-journey.svg)
@@ -567,7 +609,7 @@ leverage-per-effort:
 | Retention: streaks ✅ + weekly digest | Sprint 5 (in progress) | Streaks **shipped** (Stage 8, timezone-aware, live). Digest still pending an email provider (Resend). |
 | Smarter suggestions: tag corrections ✅ + GPT-4o copy ⚡ | Sprint 6 (code complete) | Tag corrections **shipped** (Stage 9). GPT-4o copy **built & dormant** (Stage 11) — activates by adding `OPENAI_API_KEY`, no code change. |
 | Shareable insight image (growth loop) ✅ | Sprint 7 (shipped) | Client-side canvas PNG, live (Stage 10). |
-| Edit check-in ✅ + guest→account migration ✅ + voice | Sprint 8 (in progress) | Edit + guest-migration **shipped** (Stage 10). Voice still needs a Whisper key. |
+| Edit check-in ✅ + guest→account migration ✅ + voice ⚡ | Sprint 8 (code complete) | Edit + guest-migration **shipped** (Stage 10). Voice input **built & dormant** (Stage 12) — activates with the same `OPENAI_API_KEY`, no code change. |
 
 Explicitly out of scope: dashboard trend charts (a v1 PRD non-goal — see TASKS.md).
 

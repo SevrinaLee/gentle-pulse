@@ -20,6 +20,9 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const supabase = await createClient();
   const { scopeId, isDemo } = await getScopeId(supabase);
+  // Voice input rides on the same OpenAI key as tagging/suggestions — the mic
+  // button only renders (and /api/transcribe only works) when it's set.
+  const voiceEnabled = !!process.env.OPENAI_API_KEY;
 
   try {
     const checkIns = await getCheckInsWithTags(supabase, scopeId);
@@ -51,7 +54,7 @@ export default async function Home() {
             />
           )}
 
-          {isDemo ? null : <CheckInForm />}
+          {isDemo ? null : <CheckInForm voiceEnabled={voiceEnabled} />}
 
           <div>
             <h2 className="text-sm font-medium text-indigo-deep/60 mb-3">

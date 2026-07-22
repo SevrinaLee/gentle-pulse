@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MoodPicker } from "./MoodPicker";
+import { MicButton } from "./MicButton";
 
-export function CheckInForm() {
+export function CheckInForm({ voiceEnabled = false }: { voiceEnabled?: boolean }) {
   const router = useRouter();
   const [mood, setMood] = useState("😩");
   const [text, setText] = useState("");
@@ -50,7 +51,17 @@ export function CheckInForm() {
       onSubmit={handleSubmit}
       className="bg-white rounded-2xl shadow-sm p-5 space-y-4"
     >
-      <MoodPicker value={mood} onChange={setMood} />
+      <div className="flex items-center justify-between gap-2">
+        <MoodPicker value={mood} onChange={setMood} />
+        {voiceEnabled && (
+          <MicButton
+            disabled={submitting}
+            onTranscribed={(t) =>
+              setText((prev) => (prev.trim() ? `${prev.trim()} ${t}` : t))
+            }
+          />
+        )}
+      </div>
 
       <textarea
         value={text}

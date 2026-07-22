@@ -120,11 +120,11 @@ client-side — no external account, no server round-trip.
 - [x] Edit a check-in: inline ✎ editor in the friction log → PATCH `/api/check-ins/[id]`; a text change re-tags the entry and re-aggregates patterns (old category pruned via the shared `pruneEmptyCategory` helper)
 - [x] Guest → account migration: anonymous home shows a "log your first frustration" form; the entry is stashed in `localStorage` and replayed into the account by `GuestCheckInMigrator` right after signup (claim-then-restore-on-failure so it can't double-submit or be lost)
 
-**Needs an API key (deferred):**
-- [ ] Voice input: MediaRecorder → Blob → POST `/api/transcribe` → Whisper → prefills the check-in text field
-- **Depends on:** a transcription key (OpenAI Whisper or equivalent).
+**Needs an API key — code shipped, dormant until the key exists (Stage 12):**
+- [x] Voice input built: `MicButton` (MediaRecorder) → Blob → POST `/api/transcribe` → Whisper (`whisper-1`) → appends to the check-in text field. The mic button only renders, and the route only works, when `OPENAI_API_KEY` is set (same key as tagging/suggestions); otherwise the button is hidden and the route returns 503.
+- **To activate:** the same `OPENAI_API_KEY` that lights up tagging & suggestions also lights up voice — add it to Vercel and redeploy, no code change.
 
-**Definition of Done:** Edit an existing check-in and see its tag update. A guest who submits one check-in then signs up keeps it in their new account. With a transcription key, tap 🎤 → speak → text appears in the field. ✅ (edit + guest-migration verified end-to-end; voice deferred)
+**Definition of Done:** Edit an existing check-in and see its tag update. A guest who submits one check-in then signs up keeps it in their new account. With a transcription key, tap 🎤 → speak → text appears in the field. ✅ (edit + guest-migration verified; voice route + mic UI + recording path verified via a throwaway key — only real transcription awaits a live key)
 
 ---
 
