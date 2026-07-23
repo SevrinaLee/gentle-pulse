@@ -101,7 +101,7 @@ export function MicButton({
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition disabled:opacity-50 ${
           state === "recording"
             ? "bg-rose-gold text-white hover:bg-rose-gold/90"
-            : "bg-off-white text-indigo-deep ring-1 ring-indigo-deep/10 hover:bg-white"
+            : "bg-subtle text-indigo-deep ring-1 ring-indigo-deep/10 hover:bg-surface"
         }`}
       >
         <span aria-hidden>{state === "recording" ? "⏹" : "🎤"}</span>

@@ -49,7 +49,7 @@ export function CheckInForm({ voiceEnabled = false }: { voiceEnabled?: boolean }
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-2xl shadow-sm p-5 space-y-4"
+      className="bg-surface rounded-2xl shadow-sm p-5 space-y-4"
     >
       <div className="flex items-center justify-between gap-2">
         <MoodPicker value={mood} onChange={setMood} />
@@ -84,7 +84,7 @@ export function CheckInForm({ voiceEnabled = false }: { voiceEnabled?: boolean }
       <button
         type="submit"
         disabled={submitting}
-        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-60"
       >
         {submitting ? "Saving…" : "Submit"}
       </button>

@@ -41,7 +41,7 @@ export function SuggestionDrawer({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-4">
-      <div className="bg-white text-indigo-deep rounded-2xl w-full max-w-md p-5 space-y-4">
+      <div className="bg-surface text-indigo-deep rounded-2xl w-full max-w-md p-5 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-semibold text-indigo-deep">{suggestion.headline}</h3>
           <button
@@ -65,13 +65,13 @@ export function SuggestionDrawer({
             </span>
           )}
           {suggestion.difficulty_stars != null && (
-            <span className="px-2 py-1 rounded-full bg-off-white text-indigo-deep/70">
+            <span className="px-2 py-1 rounded-full bg-subtle text-indigo-deep/70">
               Difficulty {"★".repeat(suggestion.difficulty_stars)}
               {"☆".repeat(5 - suggestion.difficulty_stars)}
             </span>
           )}
           {suggestion.energy_saved_stars != null && (
-            <span className="px-2 py-1 rounded-full bg-off-white text-indigo-deep/70">
+            <span className="px-2 py-1 rounded-full bg-subtle text-indigo-deep/70">
               Energy saved {"★".repeat(suggestion.energy_saved_stars)}
               {"☆".repeat(5 - suggestion.energy_saved_stars)}
             </span>
@@ -105,13 +105,13 @@ export function SuggestionDrawer({
           {tab === "prompt" &&
             (suggestion.chatgpt_prompt ? (
               <div className="space-y-2">
-                <p className="text-sm bg-off-white rounded-xl p-3 whitespace-pre-wrap">
+                <p className="text-sm bg-subtle rounded-xl p-3 whitespace-pre-wrap">
                   {suggestion.chatgpt_prompt}
                 </p>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="text-sm px-3 py-1.5 rounded-lg bg-indigo-deep text-off-white"
+                  className="text-sm px-3 py-1.5 rounded-lg bg-brand text-off-white"
                 >
                   {copied ? "Copied!" : "Copy prompt"}
                 </button>
@@ -122,7 +122,7 @@ export function SuggestionDrawer({
 
           {tab === "template" &&
             (suggestion.template_text ? (
-              <p className="text-sm bg-off-white rounded-xl p-3 whitespace-pre-wrap">
+              <p className="text-sm bg-subtle rounded-xl p-3 whitespace-pre-wrap">
                 {suggestion.template_text}
               </p>
             ) : (

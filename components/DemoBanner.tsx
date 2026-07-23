@@ -9,7 +9,7 @@ export function DemoBanner() {
       </p>
       <Link
         href="/login"
-        className="shrink-0 px-3 py-1.5 rounded-lg bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition"
+        className="shrink-0 px-3 py-1.5 rounded-lg bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition"
       >
         Log in
       </Link>

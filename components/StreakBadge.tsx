@@ -31,7 +31,7 @@ export function StreakBadge({
         `rounded-2xl px-4 py-3 flex items-center gap-3 ` +
         (atRisk
           ? "bg-rose-gold/10 border border-rose-gold/30"
-          : "bg-white shadow-sm") +
+          : "bg-surface shadow-sm") +
         (className ? ` ${className}` : "")
       }
     >

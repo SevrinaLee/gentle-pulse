@@ -55,7 +55,7 @@ export function DeleteAccountSection() {
       </label>
 
       {error && (
-        <div className="rounded-lg bg-white border border-red-200 text-red-700 text-sm p-3">
+        <div className="rounded-lg bg-surface border border-red-200 text-red-700 text-sm p-3">
           {error}
         </div>
       )}
@@ -76,7 +76,7 @@ export function DeleteAccountSection() {
             setConfirmText("");
             setError(null);
           }}
-          className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-white"
+          className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-surface"
         >
           Cancel
         </button>

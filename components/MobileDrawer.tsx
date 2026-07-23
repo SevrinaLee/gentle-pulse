@@ -12,6 +12,7 @@ import {
   LogoutIcon,
   CloseIcon,
 } from "@/components/icons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ICONS = {
   home: HomeIcon,
@@ -63,14 +64,14 @@ export function MobileDrawer({
         onClick={onClose}
         aria-hidden
       />
-      <div className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-white shadow-xl flex flex-col px-4 py-6">
+      <div className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-surface shadow-xl flex flex-col px-4 py-6">
         <div className="flex items-center justify-between mb-6 px-2">
           <span className="font-semibold text-indigo-deep">Gentle Pulse</span>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="w-10 h-10 flex items-center justify-center rounded-lg text-indigo-deep/60 hover:bg-off-white"
+            className="w-10 h-10 flex items-center justify-center rounded-lg text-indigo-deep/60 hover:bg-subtle"
           >
             <CloseIcon className="w-5 h-5" />
           </button>
@@ -88,7 +89,7 @@ export function MobileDrawer({
                 className={`flex items-center gap-3 px-3 py-3 rounded-xl text-base transition ${
                   active
                     ? "bg-rose-gold-light text-indigo-deep font-medium"
-                    : "text-indigo-deep/70 hover:bg-off-white"
+                    : "text-indigo-deep/70 hover:bg-subtle"
                 }`}
               >
                 <Icon className="w-5 h-5 shrink-0" />
@@ -98,17 +99,20 @@ export function MobileDrawer({
           })}
         </nav>
 
-        {authed && (
-          <form action="/api/auth/logout" method="post" className="mt-auto">
-            <button
-              type="submit"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-indigo-deep/60 hover:bg-off-white w-full"
-            >
-              <LogoutIcon className="w-5 h-5 shrink-0" />
-              Log out
-            </button>
-          </form>
-        )}
+        <div className="mt-auto pt-4 space-y-3">
+          <ThemeToggle />
+          {authed && (
+            <form action="/api/auth/logout" method="post">
+              <button
+                type="submit"
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-indigo-deep/60 hover:bg-subtle w-full"
+              >
+                <LogoutIcon className="w-5 h-5 shrink-0" />
+                Log out
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

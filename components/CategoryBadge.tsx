@@ -60,7 +60,7 @@ export function CategoryBadge({
           defaultValue={tag.category ?? "Uncategorized"}
           onChange={(e) => save(e.target.value)}
           aria-label="Choose the correct category"
-          className="text-xs px-2 py-1 rounded-full border border-indigo-deep/20 bg-white text-indigo-deep focus:outline-none focus:ring-2 focus:ring-rose-gold disabled:opacity-50"
+          className="text-xs px-2 py-1 rounded-full border border-indigo-deep/20 bg-surface text-indigo-deep focus:outline-none focus:ring-2 focus:ring-rose-gold disabled:opacity-50"
         >
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>

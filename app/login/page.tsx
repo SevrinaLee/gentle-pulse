@@ -55,9 +55,9 @@ export default function LoginPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
+          className="bg-surface rounded-2xl shadow-sm p-6 space-y-4"
         >
-          <div className="flex gap-1 bg-off-white rounded-xl p-1">
+          <div className="flex gap-1 bg-subtle rounded-xl p-1">
             <button
               type="button"
               onClick={() => {
@@ -66,7 +66,7 @@ export default function LoginPage() {
               }}
               className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition ${
                 mode === "login"
-                  ? "bg-white text-indigo-deep shadow-sm"
+                  ? "bg-surface text-indigo-deep shadow-sm"
                   : "text-indigo-deep/50"
               }`}
             >
@@ -80,7 +80,7 @@ export default function LoginPage() {
               }}
               className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition ${
                 mode === "signup"
-                  ? "bg-white text-indigo-deep shadow-sm"
+                  ? "bg-surface text-indigo-deep shadow-sm"
                   : "text-indigo-deep/50"
               }`}
             >
@@ -134,7 +134,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+            className="w-full px-5 py-2.5 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-60"
           >
             {submitting
               ? mode === "login"

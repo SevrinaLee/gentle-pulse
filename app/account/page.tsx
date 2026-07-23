@@ -28,7 +28,7 @@ export default async function AccountPage() {
     <div className="max-w-2xl mx-auto px-4 pt-2 pb-24 space-y-6">
       <h1 className="text-lg font-semibold text-indigo-deep">Account</h1>
 
-      <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+      <section className="bg-surface rounded-2xl shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-medium text-indigo-deep/60">Profile</h2>
         <ProfileForm initialName={profile?.display_name ?? ""} />
         <div className="h-px bg-indigo-deep/10" />
@@ -36,7 +36,7 @@ export default async function AccountPage() {
       </section>
 
       {digestConfigured && (
-        <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+        <section className="bg-surface rounded-2xl shadow-sm p-5 space-y-4">
           <h2 className="text-sm font-medium text-indigo-deep/60">
             Weekly digest
           </h2>
@@ -44,12 +44,12 @@ export default async function AccountPage() {
         </section>
       )}
 
-      <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+      <section className="bg-surface rounded-2xl shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-medium text-indigo-deep/60">Billing</h2>
         <BillingSection />
       </section>
 
-      <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+      <section className="bg-surface rounded-2xl shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-medium text-indigo-deep/60">Danger zone</h2>
         <DeleteAccountSection />
       </section>

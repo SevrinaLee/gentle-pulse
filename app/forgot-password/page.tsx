@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {status === "sent" ? (
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center space-y-2">
+          <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-2">
             <p className="text-2xl">📬</p>
             <p className="text-sm text-indigo-deep">
               If an account exists for <span className="font-medium">{email}</span>,
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
+            className="bg-surface rounded-2xl shadow-sm p-6 space-y-4"
           >
             <label className="block text-sm text-indigo-deep/70">
               Email
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="w-full px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+              className="w-full px-5 py-2.5 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-60"
             >
               {status === "sending" ? "Sending…" : "Send reset link"}
             </button>

@@ -101,7 +101,7 @@ export function ShareInsight({
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white text-indigo-deep rounded-2xl p-5 w-full max-w-sm space-y-4"
+            className="bg-surface text-indigo-deep rounded-2xl p-5 w-full max-w-sm space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -147,7 +147,7 @@ export function ShareInsight({
               <button
                 type="button"
                 onClick={handleDownload}
-                className="flex-1 px-4 py-2 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition"
+                className="flex-1 px-4 py-2 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition"
               >
                 Download
               </button>

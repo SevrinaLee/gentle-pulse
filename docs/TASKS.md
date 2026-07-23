@@ -128,6 +128,71 @@ client-side — no external account, no server round-trip.
 
 ---
 
+# Polish & personalization (Sprints 9–13)
+
+No external accounts or paid services — pure client + the existing Supabase DB.
+Sequenced fastest-visible-win first.
+
+## Sprint 9 — Theming & polish
+**Goal:** Make it feel crafted, and let users make it theirs.
+
+- [ ] Dark mode: a thin semantic-token layer (ink / surface / subtle / brand / paper / canvas) over the existing colors, keeping **light-mode values identical** (zero light-mode regression); dark values flip via `data-theme` on `<html>`
+- [ ] Theme toggle (light / dark / system) in the sidebar + mobile drawer, persisted to `localStorage`, with a no-flash inline script that sets the theme before first paint; respects `prefers-color-scheme` in "system"
+- [ ] Micro-interactions: animate friction-log rows in/out; streak-milestone celebration (CSS/canvas confetti at 3/7/30 days); `prefers-reduced-motion` honored
+- [ ] Self-built toast notifications (replace inline error text on the main flows)
+- [ ] Time-of-day greeting on Home ("Good evening, {name}"); `Cmd/Ctrl+Enter` submits a check-in
+- [ ] Accessibility pass: focus-trap on drawer/modals, keyboard nav, ARIA labels
+
+**Definition of Done:** Toggling the theme flips the whole app with no flash on reload; light mode is pixel-unchanged. Reduced-motion users get no animation.
+
+---
+
+## Sprint 10 — Weekly recap ("Your week in review")
+**Goal:** The in-app Spotify-Wrapped payoff — and the in-app twin of the (dormant) email digest.
+
+- [ ] `/recap` screen: top 3 drains this week, total hours "reclaimed", current streak, mood trend in words — in the existing Wrapped visual language
+- [ ] Reuse the Stage-10 share canvas to produce a shareable recap card
+- [ ] Entry point from Home when a week's worth of data exists; graceful empty state otherwise
+
+**Definition of Done:** A user with a week of check-ins sees a recap screen summarizing their week and can share a recap image. No external calls.
+
+---
+
+## Sprint 11 — Custom categories
+**Goal:** Let users describe their work in their own words.
+
+- [ ] User-defined categories (new table or JSON on `profiles`), owner-scoped; merged with the built-in set in the correction dropdown
+- [ ] Rename / add / archive a category; aggregation already keys on the category string, so patterns/insights follow automatically
+- [ ] Note: the heuristic tagger only knows built-in keywords, so custom categories are applied via manual correction until GPT-4o tagging is on
+
+**Definition of Done:** A user can add a custom category, correct a check-in into it, and see it ranked in Patterns. Built-in categories still work.
+
+---
+
+## Sprint 12 — Installable app (PWA) + local reminders
+**Goal:** A real home-screen habit tool — no app store, no paid push service.
+
+- [ ] `manifest.json` + icons + a minimal service worker (installable; cached shell for offline *viewing*)
+- [ ] Optional daily reminder via the Web Notifications API (on-device, permission-gated) — "time for your check-in?"
+- [ ] Reminder time preference stored on the profile / localStorage
+- **Caveat:** local notifications are less reliable than real push (need permission, best-effort scheduling) — but zero cost, no external dependency.
+
+**Definition of Done:** The app is installable on mobile and opens offline to a cached shell. A user who grants permission gets a local daily reminder at their chosen time.
+
+---
+
+## Sprint 13 — Control & depth
+**Goal:** Trust, findability, and a little more insight from data already collected.
+
+- [ ] Export my data (JSON/CSV download) — pure client, privacy-aligned
+- [ ] Search / filter the friction log by category or text
+- [ ] Suggestion "Done" / "Snooze" states (the `done` status already exists in the enum — close the UI loop)
+- [ ] Time-of-day / day-of-week insight ("You log the most friction on Monday mornings") as a sentence or a lightweight 7-dot week strip — **not** an axis chart (see non-goal below)
+
+**Definition of Done:** A user can export their data, filter their log, mark a suggestion done, and see a plain-language time-of-day insight. No dashboard charts introduced.
+
+---
+
 ## Explicitly out of scope (v1 non-goal — do not slide in incrementally)
 **Dashboard-style trend charts over time.** The PRD lists dashboard charts as a v1
 non-goal; the Patterns screen stays a ranked "Spotify-Wrapped" list, not a charting
@@ -147,4 +212,9 @@ Sprint 5           |--Retention: streaks (no dep) + digest (Resend)--|    ← ne
 Sprint 6                   |--Smarter suggestions: corrections + GPT-4o--|
 Sprint 7                           |--Shareable insight (growth loop)--|
 Sprint 8                                   |--Voice + edit + guest migration--|
+Sprint 9                                           |--Theming & polish (dark mode)--|
+Sprint 10                                                  |--Weekly recap (in-app Wrapped)--|
+Sprint 11                                                         |--Custom categories--|
+Sprint 12                                                                |--PWA + local reminders--|
+Sprint 13                                                                       |--Control & depth--|
 ```

@@ -21,7 +21,7 @@ export function MoodPicker({
           className={`text-2xl w-11 h-11 rounded-full flex items-center justify-center transition ${
             value === mood
               ? "bg-rose-gold/30 ring-2 ring-rose-gold"
-              : "bg-white hover:bg-off-white ring-1 ring-indigo-deep/10"
+              : "bg-surface hover:bg-subtle ring-1 ring-indigo-deep/10"
           }`}
         >
           {mood}

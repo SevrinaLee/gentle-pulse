@@ -84,7 +84,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
         <button
           type="submit"
           disabled={sending || email.trim() === currentEmail}
-          className="px-4 py-2 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-50"
+          className="px-4 py-2 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-50"
         >
           {sending ? "Sending…" : "Send confirmation"}
         </button>
@@ -95,7 +95,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
             setEmail(currentEmail);
             setError(null);
           }}
-          className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-off-white"
+          className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-subtle"
         >
           Cancel
         </button>

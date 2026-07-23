@@ -63,7 +63,7 @@ export function SighButton() {
 
       {sighId && (
         <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-4">
-          <div className="bg-white text-indigo-deep rounded-2xl p-5 w-full max-w-sm space-y-3">
+          <div className="bg-surface text-indigo-deep rounded-2xl p-5 w-full max-w-sm space-y-3">
             <h3 className="font-medium text-indigo-deep">
               Want to say more about that?
             </h3>
@@ -78,7 +78,7 @@ export function SighButton() {
               <button
                 type="button"
                 onClick={() => setSighId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-off-white"
+                className="px-4 py-2 rounded-xl text-sm text-indigo-deep/60 hover:bg-subtle"
               >
                 Skip
               </button>
@@ -86,7 +86,7 @@ export function SighButton() {
                 type="button"
                 onClick={handleSaveNote}
                 disabled={saving || !note.trim()}
-                className="px-4 py-2 rounded-xl bg-indigo-deep text-off-white text-sm font-medium disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-brand text-off-white text-sm font-medium disabled:opacity-50"
               >
                 {saving ? "Saving…" : "Save"}
               </button>

@@ -34,7 +34,7 @@ export function GuestCheckIn() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-2xl shadow-sm p-5 space-y-4"
+      className="bg-surface rounded-2xl shadow-sm p-5 space-y-4"
     >
       <div>
         <h2 className="font-semibold text-indigo-deep">
@@ -59,7 +59,7 @@ export function GuestCheckIn() {
 
       <button
         type="submit"
-        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition"
+        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition"
       >
         Save &amp; sign up
       </button>

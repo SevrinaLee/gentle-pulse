@@ -25,6 +25,7 @@ at the bottom — there's a standing rule for this.
 - [Stage 11 — GPT-4o suggestion copy, prepped](#stage-11--gpt-4o-suggestion-copy-prepped-to-activate)
 - [Stage 12 — Voice input (Whisper), prepped](#stage-12--voice-input-whisper-prepped-to-activate)
 - [Stage 13 — Weekly digest email (Resend), prepped](#stage-13--weekly-digest-email-resend-prepped-to-activate)
+- [Stage 14 — Dark mode (Sprint 9 kickoff)](#stage-14--dark-mode-sprint-9-kickoff)
 - [Current state summary](#current-state-summary)
 - [Keeping this document current](#keeping-this-document-current)
 
@@ -635,6 +636,55 @@ an email provider exists.
 
 **To activate:** add `RESEND_API_KEY`, a `DIGEST_FROM_EMAIL` on a Resend-verified
 domain, and a random `CRON_SECRET` to Vercel, then redeploy.
+
+---
+
+## Stage 14 — Dark mode (Sprint 9 kickoff)
+
+First of the polish/personalization sprints, and the headline UX customization:
+a full dark theme with a light / dark / system toggle.
+
+**The interesting part was the token model.** The original palette was named by
+hue (`indigo-deep`, `off-white`), but several tokens carried two roles that must
+move in *opposite* directions between themes: `indigo-deep` was both the primary
+text colour (needs to lighten in dark) and the deep surface behind buttons and
+the insight card (needs to stay deep); `off-white` was both the page background
+(darkens) and the light text/overlays sitting on that deep surface (stays light);
+and `bg-white` cards must darken while `text-white` on accent buttons stays white.
+A naive value-flip breaks all three.
+
+So the fix split the conflicted tokens by role into a thin semantic layer —
+`ink` (text), `paper` (light-on-brand), `brand` (deep surface), `surface`
+(cards), `subtle` (chips/hover/header), `canvas` (page) — and mechanically
+renamed the role-inverted utility usages across ~25 files (`bg-white`→`bg-surface`,
+`bg-indigo-deep`→`bg-brand`, non-overlay `bg-off-white`→`bg-subtle`), while leaving
+`text-`/`border-indigo-deep`, `text-off-white`, and the `bg-off-white/10-20`
+brand overlays to flip purely by token value. **Light-mode values are byte-for-
+byte the originals**, so light mode carries zero regression risk — only dark is
+new. Dark overrides the same `--color-*` tokens directly under
+`:root[data-theme="dark"]` (single-level vars, so a live toggle re-resolves every
+utility, no reload).
+
+**No flash on load:** a tiny synchronous script in `<head>` reads the saved
+preference (or `prefers-color-scheme` for "system") and stamps `data-theme`
+before first paint. `ThemeToggle` (a 3-way segmented control in the sidebar +
+mobile drawer) persists to `localStorage` and keeps "system" live via a
+`matchMedia` listener. A `prefers-reduced-motion` block was added too (groundwork
+for the rest of Sprint 9's micro-interactions).
+
+**Verified by exact computed values in both themes** (more precise than a
+screenshot): on load, every surface resolves to its intended token —
+light mode identical to the originals (`#faf7f2` / `#2e2360` / `#fff` / `#e8c4c4`),
+dark mode the new values (`#17141f` / `#ece9f5` / `#221d2e` / `#35296f` / `#4a3540`).
+A headless-Edge screenshot of the demo home in dark confirmed it reads well —
+distinct cards, the brand-indigo insight card standing out, legible badges. (One
+red herring along the way: elements carrying Tailwind's `transition` class read
+"stale" under live-toggle inspection because the headless compositor doesn't
+advance the 150 ms colour transition — a measurement artifact, not a bug; on
+reload every value is correct.) Build + security suite **21/21** clean.
+
+The rest of Sprint 9 (row/streak micro-interactions, toasts, greeting, a11y
+focus-traps) is still to come — this stage is dark mode + the theme system.
 
 ---
 

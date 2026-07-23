@@ -64,7 +64,7 @@ export function ProfileForm({ initialName }: { initialName: string }) {
       <button
         type="submit"
         disabled={saving || name.trim() === initialName}
-        className="px-4 py-2 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-50"
+        className="px-4 py-2 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save name"}
       </button>

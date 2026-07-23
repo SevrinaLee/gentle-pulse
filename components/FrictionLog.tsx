@@ -30,7 +30,7 @@ export function FrictionLog({
 
   if (checkIns.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-6 text-center text-sm text-indigo-deep/60">
+      <div className="bg-surface rounded-2xl p-6 text-center text-sm text-indigo-deep/60">
         No check-ins yet — what stole your time today?
       </div>
     );
@@ -77,7 +77,7 @@ export function FrictionLog({
         return (
           <li
             key={checkIn.id}
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-3"
+            className="bg-surface rounded-2xl shadow-sm p-4 flex items-start gap-3"
           >
             <span className="text-xl leading-none">{checkIn.mood}</span>
             <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ export function FrictionLog({
                       type="button"
                       onClick={() => saveEdit(checkIn.id)}
                       disabled={savingId === checkIn.id || !draft.trim()}
-                      className="px-3 py-1 rounded-lg bg-indigo-deep text-off-white text-xs font-medium hover:bg-indigo-deep-light transition disabled:opacity-50"
+                      className="px-3 py-1 rounded-lg bg-brand text-off-white text-xs font-medium hover:bg-brand-light transition disabled:opacity-50"
                     >
                       {savingId === checkIn.id ? "Saving…" : "Save"}
                     </button>

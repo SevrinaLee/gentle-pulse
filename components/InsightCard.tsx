@@ -22,7 +22,7 @@ export function InsightCard({
   if (dismissed) return null;
 
   return (
-    <div className="bg-indigo-deep text-off-white rounded-2xl p-5 space-y-2">
+    <div className="bg-brand text-off-white rounded-2xl p-5 space-y-2">
       <p className="text-xs uppercase tracking-wide text-off-white/60">
         Your biggest drain this week
       </p>

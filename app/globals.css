@@ -1,14 +1,61 @@
 @import "tailwindcss";
 
+/*
+ * Semantic theme layer. The original colour tokens were named by hue
+ * (indigo-deep, off-white), but several were used in two conflicting roles —
+ * indigo-deep as both primary TEXT and a deep SURFACE, off-white as both the
+ * page BACKGROUND and light TEXT on that deep surface. Dark mode needs those
+ * roles to move in opposite directions, so they were split into role tokens:
+ *
+ *   indigo-deep  → INK    (primary text; lightens in dark)
+ *   off-white    → PAPER  (light text/overlays on the brand surface; stays light)
+ *   brand        → deep indigo SURFACE (buttons, insight card; stays deep)
+ *   surface      → card background (was bg-white; darkens)
+ *   subtle       → page header / hover / chip background (was bg-off-white; darkens)
+ *   canvas       → the page background (body)
+ *
+ * The @theme values below are the LIGHT theme and are identical to the
+ * originals, so light mode is unchanged. Dark mode overrides the same
+ * --color-* tokens directly under [data-theme="dark"] (a single-level var, so
+ * a live theme switch re-resolves every utility immediately — no reload).
+ */
 @theme {
-  --color-indigo-deep: #2e2360;
+  --color-indigo-deep: #2e2360; /* INK — primary text */
   --color-indigo-deep-light: #4b3d8f;
   --color-rose-gold: #b76e79;
   --color-rose-gold-light: #e8c4c4;
-  --color-off-white: #faf7f2;
+  --color-off-white: #faf7f2; /* PAPER — light text on brand */
+  --color-brand: #2e2360; /* deep indigo surface */
+  --color-brand-light: #4b3d8f;
+  --color-surface: #ffffff; /* card background */
+  --color-subtle: #faf7f2; /* header / hover / chip background */
+  --color-canvas: #faf7f2; /* page background */
+}
+
+:root[data-theme="dark"] {
+  --color-indigo-deep: #ece9f5;
+  --color-indigo-deep-light: #cfc7e6;
+  --color-rose-gold: #d98a95;
+  --color-rose-gold-light: #4a3540;
+  --color-off-white: #faf7f2; /* paper stays light — it sits on the deep brand surface */
+  --color-brand: #35296f;
+  --color-brand-light: #453a86;
+  --color-surface: #221d2e;
+  --color-subtle: #2a2438;
+  --color-canvas: #17141f;
 }
 
 body {
-  background-color: var(--color-off-white);
+  background-color: var(--color-canvas);
   color: var(--color-indigo-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
         )}
 
         {status === "invalid" && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center space-y-3">
+          <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-3">
             <p className="text-sm text-indigo-deep">
               This link is invalid or has expired.
             </p>
@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
         )}
 
         {status === "done" && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center space-y-2">
+          <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-2">
             <p className="text-2xl">✅</p>
             <p className="text-sm text-indigo-deep">Password updated. Redirecting…</p>
           </div>
@@ -115,7 +115,7 @@ export default function ResetPasswordPage() {
         {status === "ready" && (
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
+            className="bg-surface rounded-2xl shadow-sm p-6 space-y-4"
           >
             <label className="block text-sm text-indigo-deep/70">
               New password
@@ -149,7 +149,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full px-5 py-2.5 rounded-xl bg-indigo-deep text-off-white text-sm font-medium hover:bg-indigo-deep-light transition disabled:opacity-60"
+              className="w-full px-5 py-2.5 rounded-xl bg-brand text-off-white text-sm font-medium hover:bg-brand-light transition disabled:opacity-60"
             >
               {saving ? "Saving…" : "Set new password"}
             </button>

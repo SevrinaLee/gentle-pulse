@@ -28,7 +28,7 @@ export default async function PatternsPage() {
           </h1>
 
           {patterns.length === 0 ? (
-            <div className="bg-white rounded-2xl p-6 text-center text-sm text-indigo-deep/60">
+            <div className="bg-surface rounded-2xl p-6 text-center text-sm text-indigo-deep/60">
               Check in for 3+ days to see your patterns emerge
             </div>
           ) : (
@@ -36,7 +36,7 @@ export default async function PatternsPage() {
               {patterns.map((pattern, i) => (
                 <li
                   key={pattern.id}
-                  className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-4"
+                  className="bg-surface rounded-2xl shadow-sm p-5 flex items-center gap-4"
                 >
                   <span className="text-2xl font-bold text-rose-gold w-8 shrink-0">
                     #{i + 1}
